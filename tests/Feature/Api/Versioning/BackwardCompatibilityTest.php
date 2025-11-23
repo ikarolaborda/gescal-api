@@ -40,10 +40,9 @@ class BackwardCompatibilityTest extends TestCase
     public function v1_reference_data_endpoints_remain_functional(): void
     {
         // Act
-        $response = $this->withHeaders([
+        $response = $this->getJsonApi('/api/v1/reference-data/federation-units', [
             'Authorization' => 'Bearer ' . $this->token,
-
-        ])->getJsonApi('/api/v1/reference-data/federation-units');
+        ]);
 
         // Assert - V1 continues to work correctly
         $response->assertStatus(200)
@@ -90,10 +89,9 @@ class BackwardCompatibilityTest extends TestCase
         // This test ensures v1 responses haven't changed in structure
 
         // Act
-        $response = $this->withHeaders([
+        $response = $this->getJsonApi('/api/v1/reference-data/federation-units', [
             'Authorization' => 'Bearer ' . $this->token,
-
-        ])->getJsonApi('/api/v1/reference-data/federation-units');
+        ]);
 
         // Assert - JSON:API structure is maintained
         $response->assertStatus(200);
@@ -136,10 +134,9 @@ class BackwardCompatibilityTest extends TestCase
     public function v1_and_v2_can_coexist(): void
     {
         // Act - Test both versions
-        $v1Response = $this->withHeaders([
+        $v1Response = $this->getJsonApi('/api/v1/reference-data/federation-units', [
             'Authorization' => 'Bearer ' . $this->token,
-
-        ])->getJsonApi('/api/v1/reference-data/federation-units');
+        ]);
 
         $v2Response = $this->getJsonApi('/api/v2/health');
 
@@ -160,10 +157,9 @@ class BackwardCompatibilityTest extends TestCase
     {
         // Act - Multiple requests to v1
         for ($i = 0; $i < 5; $i++) {
-            $response = $this->withHeaders([
+            $response = $this->getJsonApi('/api/v1/reference-data/federation-units', [
                 'Authorization' => 'Bearer ' . $this->token,
-
-            ])->getJsonApi('/api/v1/reference-data/federation-units');
+            ]);
 
             // Assert - All requests succeed (no rate limiting in test)
             $response->assertStatus(200);
@@ -174,10 +170,9 @@ class BackwardCompatibilityTest extends TestCase
     public function v1_caching_behavior_is_preserved(): void
     {
         // Act - First request
-        $response1 = $this->withHeaders([
+        $response1 = $this->getJsonApi('/api/v1/reference-data/federation-units', [
             'Authorization' => 'Bearer ' . $this->token,
-
-        ])->getJsonApi('/api/v1/reference-data/federation-units');
+        ]);
 
         $etag = $response1->headers->get('ETag');
 

@@ -23,12 +23,15 @@ class PersonFactory extends Factory
             'filiation_text' => fake()->optional()->name() . ' e ' . fake()->name(),
             'nationality' => fake()->optional(0.9)->randomElement(['brasileiro', 'brasileira']),
             'natural_city' => fake()->city(),
-            'natural_federation_unit_id' => \App\Models\FederationUnit::factory(),
-            'race_ethnicity_id' => \App\Models\RaceEthnicity::factory(),
-            'marital_status_id' => \App\Models\MaritalStatus::factory(),
-            'schooling_level_id' => \App\Models\SchoolingLevel::factory(),
-            'primary_phone' => fake()->optional()->phoneNumber(),
-            'secondary_phone' => fake()->optional(0.3)->phoneNumber(),
+            'natural_federation_unit_id' => \App\Models\FederationUnit::inRandomOrder()->first()?->id ?? 1,
+            'race_ethnicity_id' => \App\Models\RaceEthnicity::inRandomOrder()->first()?->id,
+            'marital_status_id' => \App\Models\MaritalStatus::inRandomOrder()->first()?->id,
+            'schooling_level_id' => \App\Models\SchoolingLevel::inRandomOrder()->first()?->id,
+            'primary_phone' => '+55 ' . fake()->numberBetween(11, 99) . ' 9' . fake()->numerify('####-####'),
+            'secondary_phone' => fake()->optional(0.3)->randomElement([
+                '+55 ' . fake()->numberBetween(11, 99) . ' 9' . fake()->numerify('####-####'),
+                null,
+            ]),
             'email' => fake()->optional()->safeEmail(),
         ];
     }

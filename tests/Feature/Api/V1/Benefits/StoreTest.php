@@ -104,13 +104,12 @@ class StoreTest extends TestCase
         $program = BenefitProgram::first();
 
         // Act
-        $response = $this->withHeaders([
-            'Authorization' => 'Bearer ' . $this->socialWorkerToken,
-
-        ])->postJsonApi('/api/v1/benefits', [
+        $response = $this->postJsonApi('/api/v1/benefits', [
             'family_id' => $family->id,
             'benefit_program_id' => $program->id,
             'value' => 500.00,
+        ], [
+            'Authorization' => 'Bearer ' . $this->socialWorkerToken,
         ]);
 
         // Assert
@@ -124,12 +123,11 @@ class StoreTest extends TestCase
         $program = BenefitProgram::first();
 
         // Act
-        $response = $this->withHeaders([
-            'Authorization' => 'Bearer ' . $this->coordinatorToken,
-
-        ])->postJsonApi('/api/v1/benefits', [
+        $response = $this->postJsonApi('/api/v1/benefits', [
             'benefit_program_id' => $program->id,
             'value' => 500.00,
+        ], [
+            'Authorization' => 'Bearer ' . $this->coordinatorToken,
         ]);
 
         // Assert
@@ -145,13 +143,12 @@ class StoreTest extends TestCase
         $program = BenefitProgram::first();
 
         // Act
-        $response = $this->withHeaders([
-            'Authorization' => 'Bearer ' . $this->coordinatorToken,
-
-        ])->postJsonApi('/api/v1/benefits', [
+        $response = $this->postJsonApi('/api/v1/benefits', [
             'family_id' => $family->id,
             'benefit_program_id' => $program->id,
             'value' => -100.00,
+        ], [
+            'Authorization' => 'Bearer ' . $this->coordinatorToken,
         ]);
 
         // Assert

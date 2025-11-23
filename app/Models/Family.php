@@ -36,6 +36,11 @@ class Family extends Model
         return $this->belongsTo(Person::class, 'responsible_person_id');
     }
 
+    public function responsiblePerson(): BelongsTo
+    {
+        return $this->responsible();
+    }
+
     public function address(): BelongsTo
     {
         return $this->belongsTo(Address::class);

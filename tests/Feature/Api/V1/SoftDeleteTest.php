@@ -37,10 +37,9 @@ class SoftDeleteTest extends TestCase
         $person = Person::factory()->create();
 
         // Act
-        $response = $this->withHeaders([
+        $response = $this->deleteJsonApi("/api/v1/persons/{$person->id}", [], [
             'Authorization' => 'Bearer ' . $this->token,
-
-        ])->deleteJsonApi("/api/v1/persons/{$person->id}");
+        ]);
 
         // Assert
         $response->assertStatus(204);
@@ -62,10 +61,9 @@ class SoftDeleteTest extends TestCase
         $family = Family::factory()->create();
 
         // Act
-        $response = $this->withHeaders([
+        $response = $this->deleteJsonApi("/api/v1/families/{$family->id}", [], [
             'Authorization' => 'Bearer ' . $this->token,
-
-        ])->deleteJsonApi("/api/v1/families/{$family->id}");
+        ]);
 
         // Assert
         $response->assertStatus(204);
@@ -76,10 +74,9 @@ class SoftDeleteTest extends TestCase
     public function deleting_nonexistent_resource_returns_404(): void
     {
         // Act
-        $response = $this->withHeaders([
+        $response = $this->deleteJsonApi('/api/v1/persons/99999', [], [
             'Authorization' => 'Bearer ' . $this->token,
-
-        ])->deleteJsonApi('/api/v1/persons/99999');
+        ]);
 
         // Assert
         $response->assertStatus(404);
@@ -94,10 +91,9 @@ class SoftDeleteTest extends TestCase
         $deletedPerson->delete();
 
         // Act
-        $response = $this->withHeaders([
+        $response = $this->getJsonApi('/api/v1/persons', [
             'Authorization' => 'Bearer ' . $this->token,
-
-        ])->getJsonApi('/api/v1/persons');
+        ]);
 
         // Assert
         $response->assertStatus(200);

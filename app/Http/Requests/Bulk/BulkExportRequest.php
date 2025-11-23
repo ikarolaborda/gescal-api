@@ -24,7 +24,7 @@ class BulkExportRequest extends FormRequest
     {
         return [
             'types' => 'required|array|min:1',
-            'types.*' => 'required|string|in:people,families,cases,benefits',
+            'types.*' => 'required|string|in:persons,families,cases,benefits',
             'filters' => 'sometimes|array',
             'filters.created_since' => 'sometimes|date',
             'filters.updated_since' => 'sometimes|date',
@@ -42,7 +42,7 @@ class BulkExportRequest extends FormRequest
         return [
             'types.required' => 'Pelo menos um tipo de recurso deve ser especificado',
             'types.min' => 'Pelo menos um tipo de recurso deve ser especificado',
-            'types.*.in' => 'Tipo de recurso inválido. Valores permitidos: people, families, cases, benefits',
+            'types.*.in' => 'Tipo de recurso inválido. Valores permitidos: persons, families, cases, benefits',
             'filters.created_since.date' => 'Data de criação deve ser uma data válida',
             'filters.updated_since.date' => 'Data de atualização deve ser uma data válida',
         ];

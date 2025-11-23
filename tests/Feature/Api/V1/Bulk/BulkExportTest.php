@@ -43,11 +43,11 @@ class BulkExportTest extends TestCase
         Person::factory()->count(3)->create();
 
         $exportData = [
-            'types' => ['people'],
+            'types' => ['persons'],
         ];
 
         // Act
-        $response = $this->post('/api/v1/bulk/export', $exportData, [
+        $response = $this->postJsonApi('/api/v1/bulk/export', $exportData, [
             'Authorization' => 'Bearer ' . $this->coordinatorToken,
 
         ]);
@@ -86,11 +86,11 @@ class BulkExportTest extends TestCase
         Person::factory()->count(3)->create();
 
         $exportData = [
-            'types' => ['people'],
+            'types' => ['persons'],
         ];
 
         // Act
-        $response = $this->post('/api/v1/bulk/export', $exportData, [
+        $response = $this->postJsonApi('/api/v1/bulk/export', $exportData, [
             'Authorization' => 'Bearer ' . $this->socialWorkerToken,
 
         ]);
@@ -106,11 +106,11 @@ class BulkExportTest extends TestCase
         Family::factory()->count(3)->create();
 
         $exportData = [
-            'types' => ['people', 'families'],
+            'types' => ['persons', 'families'],
         ];
 
         // Act
-        $response = $this->post('/api/v1/bulk/export', $exportData, [
+        $response = $this->postJsonApi('/api/v1/bulk/export', $exportData, [
             'Authorization' => 'Bearer ' . $this->coordinatorToken,
 
         ]);
@@ -140,14 +140,14 @@ class BulkExportTest extends TestCase
         $newPerson = Person::factory()->create(['created_at' => now()->subDay()]);
 
         $exportData = [
-            'types' => ['people'],
+            'types' => ['persons'],
             'filters' => [
                 'created_since' => now()->subDays(2)->toDateString(),
             ],
         ];
 
         // Act
-        $response = $this->post('/api/v1/bulk/export', $exportData, [
+        $response = $this->postJsonApi('/api/v1/bulk/export', $exportData, [
             'Authorization' => 'Bearer ' . $this->coordinatorToken,
 
         ]);
@@ -171,11 +171,11 @@ class BulkExportTest extends TestCase
         Person::factory()->count(15)->create();
 
         $exportData = [
-            'types' => ['people'],
+            'types' => ['persons'],
         ];
 
         // Act
-        $response = $this->post('/api/v1/bulk/export', $exportData, [
+        $response = $this->postJsonApi('/api/v1/bulk/export', $exportData, [
             'Authorization' => 'Bearer ' . $this->coordinatorToken,
 
         ]);
@@ -197,7 +197,7 @@ class BulkExportTest extends TestCase
         ];
 
         // Act
-        $response = $this->post('/api/v1/bulk/export', $exportData, [
+        $response = $this->postJsonApi('/api/v1/bulk/export', $exportData, [
             'Authorization' => 'Bearer ' . $this->coordinatorToken,
 
         ]);
@@ -215,7 +215,7 @@ class BulkExportTest extends TestCase
         ];
 
         // Act
-        $response = $this->post('/api/v1/bulk/export', $exportData, [
+        $response = $this->postJsonApi('/api/v1/bulk/export', $exportData, [
             'Authorization' => 'Bearer ' . $this->coordinatorToken,
 
         ]);
@@ -231,11 +231,11 @@ class BulkExportTest extends TestCase
         Person::factory()->create();
 
         $exportData = [
-            'types' => ['people'],
+            'types' => ['persons'],
         ];
 
         // Act
-        $response = $this->post('/api/v1/bulk/export', $exportData, [
+        $response = $this->postJsonApi('/api/v1/bulk/export', $exportData, [
             'Authorization' => 'Bearer ' . $this->coordinatorToken,
 
         ]);
@@ -258,11 +258,11 @@ class BulkExportTest extends TestCase
         $person = Person::factory()->create(['full_name' => 'Test Person']);
 
         $exportData = [
-            'types' => ['people'],
+            'types' => ['persons'],
         ];
 
         // Act
-        $response = $this->post('/api/v1/bulk/export', $exportData, [
+        $response = $this->postJsonApi('/api/v1/bulk/export', $exportData, [
             'Authorization' => 'Bearer ' . $this->coordinatorToken,
 
         ]);
@@ -285,7 +285,7 @@ class BulkExportTest extends TestCase
         ];
 
         // Act
-        $response = $this->post('/api/v1/bulk/export', $exportData, [
+        $response = $this->postJsonApi('/api/v1/bulk/export', $exportData, [
             'Authorization' => 'Bearer ' . $this->coordinatorToken,
 
         ]);
@@ -300,11 +300,11 @@ class BulkExportTest extends TestCase
     {
         // Arrange
         $exportData = [
-            'types' => ['people'],
+            'types' => ['persons'],
         ];
 
         // Act
-        $response = $this->post('/api/v1/bulk/export', $exportData, [
+        $response = $this->postJsonApi('/api/v1/bulk/export', $exportData, [
 
         ]);
 

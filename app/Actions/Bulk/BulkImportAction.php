@@ -51,7 +51,7 @@ class BulkImportAction
     protected function validate(array $data): void
     {
         $validator = Validator::make($data, [
-            'people' => 'sometimes|array|max:' . self::MAX_RECORDS_PER_TYPE,
+            'persons' => 'sometimes|array|max:' . self::MAX_RECORDS_PER_TYPE,
             'people.*' => 'array',
             'families' => 'sometimes|array|max:' . self::MAX_RECORDS_PER_TYPE,
             'families.*' => 'array',
@@ -60,7 +60,7 @@ class BulkImportAction
             'benefits' => 'sometimes|array|max:' . self::MAX_RECORDS_PER_TYPE,
             'benefits.*' => 'array',
         ], [
-            'people.max' => 'Maximum ' . self::MAX_RECORDS_PER_TYPE . ' records allowed for people',
+            'people.max' => 'Maximum ' . self::MAX_RECORDS_PER_TYPE . ' records allowed for persons',
             'families.max' => 'Maximum ' . self::MAX_RECORDS_PER_TYPE . ' records allowed for families',
             'cases.max' => 'Maximum ' . self::MAX_RECORDS_PER_TYPE . ' records allowed for cases',
             'benefits.max' => 'Maximum ' . self::MAX_RECORDS_PER_TYPE . ' records allowed for benefits',
@@ -129,7 +129,7 @@ class BulkImportAction
     protected function createRecord(string $type, array $data): mixed
     {
         return match ($type) {
-            'people' => $this->createPerson->execute(
+            'persons' => $this->createPerson->execute(
                 data: $data,
                 inTransaction: false
             ),

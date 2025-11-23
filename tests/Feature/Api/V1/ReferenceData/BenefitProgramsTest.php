@@ -34,9 +34,9 @@ class BenefitProgramsTest extends TestCase
     public function can_retrieve_benefit_programs(): void
     {
         // Act
-        $response = $this->withHeaders([
+        $response = $this->getJsonApi('/api/v1/reference-data/benefit-programs', [
             'Authorization' => 'Bearer ' . $this->token,
-        ])->getJsonApi('/api/v1/reference-data/benefit-programs');
+        ]);
 
         // Assert
         $response->assertStatus(200)
@@ -61,9 +61,9 @@ class BenefitProgramsTest extends TestCase
         }
 
         // Arrange: First request
-        $this->withHeaders([
+        $this->getJsonApi('/api/v1/reference-data/benefit-programs', [
             'Authorization' => 'Bearer ' . $this->token,
-        ])->getJsonApi('/api/v1/reference-data/benefit-programs');
+        ]);
 
         // Assert: Data should be cached
         $this->assertTrue(Cache::tags(['reference_data', 'reference_data.BenefitProgram'])->has('reference_data.BenefitProgram'));
@@ -73,9 +73,9 @@ class BenefitProgramsTest extends TestCase
     public function benefit_programs_return_etag_header(): void
     {
         // Act
-        $response = $this->withHeaders([
+        $response = $this->getJsonApi('/api/v1/reference-data/benefit-programs', [
             'Authorization' => 'Bearer ' . $this->token,
-        ])->getJsonApi('/api/v1/reference-data/benefit-programs');
+        ]);
 
         // Assert
         $response->assertHeader('ETag');
@@ -85,9 +85,9 @@ class BenefitProgramsTest extends TestCase
     public function benefit_programs_return_304_when_etag_matches(): void
     {
         // Arrange: Get initial response with ETag
-        $initialResponse = $this->withHeaders([
+        $initialResponse = $this->getJsonApi('/api/v1/reference-data/benefit-programs', [
             'Authorization' => 'Bearer ' . $this->token,
-        ])->getJsonApi('/api/v1/reference-data/benefit-programs');
+        ]);
         $etag = $initialResponse->headers->get('ETag');
 
         // Act: Request with same ETag

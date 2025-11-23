@@ -53,7 +53,7 @@ class CreateBenefitAction
     protected function notifyCoordinators(Benefit $benefit): void
     {
         $coordinators = User::whereHas('roles', function ($query) {
-            $query->where('name', 'coordinator');
+            $query->where('slug', 'coordinator');
         })->get();
 
         $actionUrl = config('app.frontend_url') . '/benefits/' . $benefit->id;

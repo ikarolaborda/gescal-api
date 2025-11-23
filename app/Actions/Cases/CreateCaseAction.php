@@ -51,7 +51,7 @@ class CreateCaseAction
     protected function notifyCoordinators(CaseRecord $case): void
     {
         $coordinators = User::whereHas('roles', function ($query) {
-            $query->where('name', 'coordinator');
+            $query->where('slug', 'coordinator');
         })->get();
 
         $actionUrl = config('app.frontend_url') . '/cases/' . $case->id;

@@ -19,7 +19,7 @@ class BenefitFactory extends Factory
         return [
             'family_id' => \App\Models\Family::factory(),
             'person_id' => null,
-            'benefit_program_id' => \App\Models\BenefitProgram::factory(),
+            'benefit_program_id' => \App\Models\BenefitProgram::inRandomOrder()->first()?->id ?? 1,
             'value' => fake()->randomFloat(2, 100, 5000),
             'is_active' => fake()->boolean(80),
             'started_at' => fake()->dateTimeBetween('-1 year', 'now')->format('Y-m-d'),

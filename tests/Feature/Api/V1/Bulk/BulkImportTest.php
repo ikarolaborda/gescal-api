@@ -51,7 +51,7 @@ class BulkImportTest extends TestCase
     {
         // Arrange
         $importData = [
-            'people' => [
+            'persons' => [
                 [
                     'full_name' => 'João Silva',
                     'sex' => 'Masculino',
@@ -76,7 +76,7 @@ class BulkImportTest extends TestCase
         ];
 
         // Act
-        $response = $this->post('/api/v1/bulk/import', $importData, [
+        $response = $this->postJsonApi('/api/v1/bulk/import', $importData, [
             'Authorization' => 'Bearer ' . $this->coordinatorToken,
 
         ]);
@@ -89,7 +89,7 @@ class BulkImportTest extends TestCase
                     'attributes' => [
                         'success' => true,
                         'results' => [
-                            'people' => [
+                            'persons' => [
                                 'created' => 2,
                                 'failed' => 0,
                                 'errors' => [],
@@ -108,7 +108,7 @@ class BulkImportTest extends TestCase
     {
         // Arrange
         $importData = [
-            'people' => [
+            'persons' => [
                 [
                     'full_name' => 'Test Person',
                     'sex' => 'Masculino',
@@ -119,7 +119,7 @@ class BulkImportTest extends TestCase
         ];
 
         // Act
-        $response = $this->post('/api/v1/bulk/import', $importData, [
+        $response = $this->postJsonApi('/api/v1/bulk/import', $importData, [
             'Authorization' => 'Bearer ' . $this->socialWorkerToken,
 
         ]);
@@ -141,24 +141,24 @@ class BulkImportTest extends TestCase
             ];
         }
 
-        $importData = ['people' => $people];
+        $importData = ['persons' => $people];
 
         // Act
-        $response = $this->post('/api/v1/bulk/import', $importData, [
+        $response = $this->postJsonApi('/api/v1/bulk/import', $importData, [
             'Authorization' => 'Bearer ' . $this->coordinatorToken,
 
         ]);
 
         // Assert
         $response->assertStatus(422)
-            ->assertJsonValidationErrors('people');
+            ->assertJsonValidationErrors('persons');
     }
 
     public function test_bulk_import_rolls_back_on_validation_error(): void
     {
         // Arrange
         $importData = [
-            'people' => [
+            'persons' => [
                 [
                     'full_name' => 'Valid Person',
                     'sex' => 'Masculino',
@@ -179,7 +179,7 @@ class BulkImportTest extends TestCase
         ];
 
         // Act
-        $response = $this->post('/api/v1/bulk/import', $importData, [
+        $response = $this->postJsonApi('/api/v1/bulk/import', $importData, [
             'Authorization' => 'Bearer ' . $this->coordinatorToken,
 
         ]);
@@ -217,7 +217,7 @@ class BulkImportTest extends TestCase
         ];
 
         // Act
-        $response = $this->post('/api/v1/bulk/import', $importData, [
+        $response = $this->postJsonApi('/api/v1/bulk/import', $importData, [
             'Authorization' => 'Bearer ' . $this->coordinatorToken,
 
         ]);
@@ -245,7 +245,7 @@ class BulkImportTest extends TestCase
     {
         // Arrange
         $importData = [
-            'people' => array_fill(0, 1001, [
+            'persons' => array_fill(0, 1001, [
                 'full_name' => 'Test',
                 'sex' => 'Masculino',
                 'birth_date' => '1990-01-01',
@@ -253,7 +253,7 @@ class BulkImportTest extends TestCase
         ];
 
         // Act
-        $response = $this->post('/api/v1/bulk/import', $importData, [
+        $response = $this->postJsonApi('/api/v1/bulk/import', $importData, [
             'Authorization' => 'Bearer ' . $this->coordinatorToken,
 
         ]);
@@ -261,7 +261,7 @@ class BulkImportTest extends TestCase
         // Assert
         $response->assertStatus(422);
         $responseData = $response->json();
-        $this->assertStringContainsString('Máximo', $responseData['errors']['people'][0]);
+        $this->assertStringContainsString('Máximo', $responseData['errors']['persons'][0]);
     }
 
     public function test_bulk_import_handles_mixed_resource_types(): void
@@ -271,7 +271,7 @@ class BulkImportTest extends TestCase
         $address = Address::factory()->create();
 
         $importData = [
-            'people' => [
+            'persons' => [
                 [
                     'full_name' => 'New Person',
                     'sex' => 'Masculino',
@@ -295,7 +295,7 @@ class BulkImportTest extends TestCase
         ];
 
         // Act
-        $response = $this->post('/api/v1/bulk/import', $importData, [
+        $response = $this->postJsonApi('/api/v1/bulk/import', $importData, [
             'Authorization' => 'Bearer ' . $this->coordinatorToken,
 
         ]);
@@ -307,7 +307,7 @@ class BulkImportTest extends TestCase
                     'attributes' => [
                         'success' => true,
                         'results' => [
-                            'people' => ['created' => 1],
+                            'persons' => ['created' => 1],
                             'families' => ['created' => 1],
                         ],
                     ],
@@ -322,7 +322,7 @@ class BulkImportTest extends TestCase
     {
         // Arrange
         $importData = [
-            'people' => [
+            'persons' => [
                 [
                     'full_name' => 'Test Person',
                     'sex' => 'Masculino',
@@ -332,7 +332,7 @@ class BulkImportTest extends TestCase
         ];
 
         // Act
-        $response = $this->post('/api/v1/bulk/import', $importData, [
+        $response = $this->postJsonApi('/api/v1/bulk/import', $importData, [
 
         ]);
 

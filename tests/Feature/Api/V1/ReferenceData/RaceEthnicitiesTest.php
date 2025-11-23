@@ -39,9 +39,9 @@ class RaceEthnicitiesTest extends TestCase
     public function can_retrieve_race_ethnicities(): void
     {
         // Act
-        $response = $this->withHeaders([
+        $response = $this->getJsonApi('/api/v1/reference-data/race-ethnicities', [
             'Authorization' => 'Bearer ' . $this->token,
-        ])->getJsonApi('/api/v1/reference-data/race-ethnicities');
+        ]);
 
         // Assert
         $response->assertStatus(200)
@@ -66,9 +66,9 @@ class RaceEthnicitiesTest extends TestCase
         }
 
         // Arrange: First request
-        $this->withHeaders([
+        $this->getJsonApi('/api/v1/reference-data/race-ethnicities', [
             'Authorization' => 'Bearer ' . $this->token,
-        ])->getJsonApi('/api/v1/reference-data/race-ethnicities');
+        ]);
 
         // Assert: Data should be cached
         $this->assertTrue(Cache::tags(['reference_data', 'reference_data.RaceEthnicity'])->has('reference_data.RaceEthnicity'));
@@ -78,9 +78,9 @@ class RaceEthnicitiesTest extends TestCase
     public function race_ethnicities_return_etag_header(): void
     {
         // Act
-        $response = $this->withHeaders([
+        $response = $this->getJsonApi('/api/v1/reference-data/race-ethnicities', [
             'Authorization' => 'Bearer ' . $this->token,
-        ])->getJsonApi('/api/v1/reference-data/race-ethnicities');
+        ]);
 
         // Assert
         $response->assertHeader('ETag');
@@ -90,9 +90,9 @@ class RaceEthnicitiesTest extends TestCase
     public function race_ethnicities_return_304_when_etag_matches(): void
     {
         // Arrange: Get initial response with ETag
-        $initialResponse = $this->withHeaders([
+        $initialResponse = $this->getJsonApi('/api/v1/reference-data/race-ethnicities', [
             'Authorization' => 'Bearer ' . $this->token,
-        ])->getJsonApi('/api/v1/reference-data/race-ethnicities');
+        ]);
         $etag = $initialResponse->headers->get('ETag');
 
         // Act: Request with same ETag

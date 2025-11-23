@@ -39,9 +39,9 @@ class MaritalStatusesTest extends TestCase
     public function can_retrieve_marital_statuses(): void
     {
         // Act
-        $response = $this->withHeaders([
+        $response = $this->getJsonApi('/api/v1/reference-data/marital-statuses', [
             'Authorization' => 'Bearer ' . $this->token,
-        ])->getJsonApi('/api/v1/reference-data/marital-statuses');
+        ]);
 
         // Assert
         $response->assertStatus(200)
@@ -66,9 +66,9 @@ class MaritalStatusesTest extends TestCase
         }
 
         // Arrange: First request
-        $this->withHeaders([
+        $this->getJsonApi('/api/v1/reference-data/marital-statuses', [
             'Authorization' => 'Bearer ' . $this->token,
-        ])->getJsonApi('/api/v1/reference-data/marital-statuses');
+        ]);
 
         // Assert: Data should be cached
         $this->assertTrue(Cache::tags(['reference_data', 'reference_data.MaritalStatus'])->has('reference_data.MaritalStatus'));
@@ -78,9 +78,9 @@ class MaritalStatusesTest extends TestCase
     public function marital_statuses_return_etag_header(): void
     {
         // Act
-        $response = $this->withHeaders([
+        $response = $this->getJsonApi('/api/v1/reference-data/marital-statuses', [
             'Authorization' => 'Bearer ' . $this->token,
-        ])->getJsonApi('/api/v1/reference-data/marital-statuses');
+        ]);
 
         // Assert
         $response->assertHeader('ETag');
@@ -90,9 +90,9 @@ class MaritalStatusesTest extends TestCase
     public function marital_statuses_return_304_when_etag_matches(): void
     {
         // Arrange: Get initial response with ETag
-        $initialResponse = $this->withHeaders([
+        $initialResponse = $this->getJsonApi('/api/v1/reference-data/marital-statuses', [
             'Authorization' => 'Bearer ' . $this->token,
-        ])->getJsonApi('/api/v1/reference-data/marital-statuses');
+        ]);
         $etag = $initialResponse->headers->get('ETag');
 
         // Act: Request with same ETag

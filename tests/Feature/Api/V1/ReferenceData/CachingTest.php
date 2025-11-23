@@ -41,9 +41,9 @@ class CachingTest extends TestCase
         $cacheService = app(CacheInvalidationService::class);
 
         // Make an initial request to cache data
-        $response = $this->withHeaders([
+        $response = $this->getJsonApi('/api/v1/reference-data/federation-units', [
             'Authorization' => 'Bearer ' . $this->token,
-        ])->getJsonApi('/api/v1/reference-data/federation-units');
+        ]);
 
         $response->assertStatus(200);
         $initialEtag = $response->headers->get('ETag');
@@ -63,9 +63,9 @@ class CachingTest extends TestCase
         $this->assertFalse(Cache::tags(['reference_data', 'federation_units'])->has('federation_units.all'));
 
         // Make another request - should hit DB and generate a new ETag
-        $response = $this->withHeaders([
+        $response = $this->getJsonApi('/api/v1/reference-data/federation-units', [
             'Authorization' => 'Bearer ' . $this->token,
-        ])->getJsonApi('/api/v1/reference-data/federation-units');
+        ]);
 
         $response->assertStatus(200)
             ->assertHeader('ETag');

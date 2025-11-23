@@ -67,11 +67,10 @@ class StoreTest extends TestCase
     public function creating_case_requires_family_id(): void
     {
         // Act
-        $response = $this->withHeaders([
-            'Authorization' => 'Bearer ' . $this->token,
-
-        ])->postJsonApi('/api/v1/cases', [
+        $response = $this->postJsonApi('/api/v1/cases', [
             'service_date' => now()->format('Y-m-d'),
+        ], [
+            'Authorization' => 'Bearer ' . $this->token,
         ]);
 
         // Assert
@@ -86,11 +85,10 @@ class StoreTest extends TestCase
         $family = Family::factory()->create();
 
         // Act
-        $response = $this->withHeaders([
-            'Authorization' => 'Bearer ' . $this->token,
-
-        ])->postJsonApi('/api/v1/cases', [
+        $response = $this->postJsonApi('/api/v1/cases', [
             'family_id' => $family->id,
+        ], [
+            'Authorization' => 'Bearer ' . $this->token,
         ]);
 
         // Assert
@@ -104,23 +102,21 @@ class StoreTest extends TestCase
         // Arrange
         $family = Family::factory()->create();
 
-        $this->withHeaders([
-            'Authorization' => 'Bearer ' . $this->token,
-
-        ])->postJsonApi('/api/v1/cases', [
+        $this->postJsonApi('/api/v1/cases', [
             'family_id' => $family->id,
             'service_date' => now()->format('Y-m-d'),
             'dc_number' => 'DUPLICATE-001',
+        ], [
+            'Authorization' => 'Bearer ' . $this->token,
         ]);
 
         // Act - Try to create another case with same DC number
-        $response = $this->withHeaders([
-            'Authorization' => 'Bearer ' . $this->token,
-
-        ])->postJsonApi('/api/v1/cases', [
+        $response = $this->postJsonApi('/api/v1/cases', [
             'family_id' => $family->id,
             'service_date' => now()->format('Y-m-d'),
             'dc_number' => 'DUPLICATE-001',
+        ], [
+            'Authorization' => 'Bearer ' . $this->token,
         ]);
 
         // Assert

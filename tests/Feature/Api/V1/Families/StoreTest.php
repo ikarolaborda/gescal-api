@@ -72,11 +72,10 @@ class StoreTest extends TestCase
         $federationUnit = FederationUnit::first();
 
         // Act
-        $response = $this->withHeaders([
-            'Authorization' => 'Bearer ' . $this->token,
-
-        ])->postJsonApi('/api/v1/families', [
+        $response = $this->postJsonApi('/api/v1/families', [
             'origin_federation_unit_id' => $federationUnit->id,
+        ], [
+            'Authorization' => 'Bearer ' . $this->token,
         ]);
 
         // Assert
@@ -92,13 +91,12 @@ class StoreTest extends TestCase
         $federationUnit = FederationUnit::first();
 
         // Act
-        $response = $this->withHeaders([
-            'Authorization' => 'Bearer ' . $this->token,
-
-        ])->postJsonApi('/api/v1/families', [
+        $response = $this->postJsonApi('/api/v1/families', [
             'responsible_person_id' => $responsiblePerson->id,
             'origin_federation_unit_id' => $federationUnit->id,
             'family_income_value' => -100.00,
+        ], [
+            'Authorization' => 'Bearer ' . $this->token,
         ]);
 
         // Assert

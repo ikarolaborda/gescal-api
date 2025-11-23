@@ -37,12 +37,11 @@ class UpdateTest extends TestCase
     public function authenticated_user_can_update_family(): void
     {
         // Act
-        $response = $this->withHeaders([
-            'Authorization' => 'Bearer ' . $this->token,
-
-        ])->patchJsonApi("/api/v1/families/{$this->family->id}", [
+        $response = $this->patchJsonApi("/api/v1/families/{$this->family->id}", [
             'origin_city' => 'Rio de Janeiro',
             'family_income_value' => 3000.00,
+        ], [
+            'Authorization' => 'Bearer ' . $this->token,
         ]);
 
         // Assert
@@ -58,11 +57,10 @@ class UpdateTest extends TestCase
     public function updating_family_returns_404_for_nonexistent_family(): void
     {
         // Act
-        $response = $this->withHeaders([
-            'Authorization' => 'Bearer ' . $this->token,
-
-        ])->patchJsonApi('/api/v1/families/99999', [
+        $response = $this->patchJsonApi('/api/v1/families/99999', [
             'origin_city' => 'Brasília',
+        ], [
+            'Authorization' => 'Bearer ' . $this->token,
         ]);
 
         // Assert

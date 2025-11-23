@@ -40,10 +40,9 @@ class DeprecationHeadersTest extends TestCase
     public function v1_endpoints_do_not_include_deprecation_headers_by_default(): void
     {
         // Act
-        $response = $this->withHeaders([
+        $response = $this->getJsonApi('/api/v1/reference-data/federation-units', [
             'Authorization' => 'Bearer ' . $this->token,
-
-        ])->getJsonApi('/api/v1/reference-data/federation-units');
+        ]);
 
         // Assert - V1 is NOT deprecated yet
         $response->assertStatus(200)
@@ -65,10 +64,9 @@ class DeprecationHeadersTest extends TestCase
         config(['api.v1_deprecation_date' => 'Sat, 22 Nov 2025 00:00:00 GMT']);
 
         // Act
-        $response = $this->withHeaders([
+        $response = $this->getJsonApi('/api/v1/reference-data/federation-units', [
             'Authorization' => 'Bearer ' . $this->token,
-
-        ])->getJsonApi('/api/v1/reference-data/federation-units');
+        ]);
 
         // Assert - Deprecation headers should be present
         $response->assertStatus(200)
@@ -86,10 +84,9 @@ class DeprecationHeadersTest extends TestCase
         config(['api.v1_deprecated' => true]);
 
         // Act
-        $response = $this->withHeaders([
+        $response = $this->getJsonApi('/api/v1/reference-data/federation-units', [
             'Authorization' => 'Bearer ' . $this->token,
-
-        ])->getJsonApi('/api/v1/reference-data/federation-units');
+        ]);
 
         // Assert
         $response->assertStatus(200)

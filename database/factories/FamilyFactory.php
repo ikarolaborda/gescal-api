@@ -27,7 +27,7 @@ class FamilyFactory extends Factory
             'responsible_person_id' => \App\Models\Person::factory(),
             'address_id' => \App\Models\Address::factory(),
             'origin_city' => fake()->city(),
-            'origin_federation_unit_id' => \App\Models\FederationUnit::factory(),
+            'origin_federation_unit_id' => \App\Models\FederationUnit::inRandomOrder()->first()?->id ?? 1,
             'family_income_bracket' => fake()->randomElement([
                 'Até 1 salário mínimo',
                 '1 a 2 salários mínimos',

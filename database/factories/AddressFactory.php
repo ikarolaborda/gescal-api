@@ -22,7 +22,7 @@ class AddressFactory extends Factory
             'complement' => fake()->optional()->secondaryAddress(),
             'neighborhood' => fake()->optional()->citySuffix(),
             'city' => fake()->city(),
-            'state_id' => \App\Models\FederationUnit::factory(),
+            'state_id' => \App\Models\FederationUnit::inRandomOrder()->first()?->id ?? 1,
             'zip_code' => fake()->optional()->postcode(),
             'reference_point' => fake()->optional()->sentence(),
         ];

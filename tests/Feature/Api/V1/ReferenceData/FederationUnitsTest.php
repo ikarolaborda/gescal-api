@@ -39,9 +39,9 @@ class FederationUnitsTest extends TestCase
     public function can_retrieve_federation_units(): void
     {
         // Act
-        $response = $this->withHeaders([
+        $response = $this->getJsonApi('/api/v1/reference-data/federation-units', [
             'Authorization' => 'Bearer ' . $this->token,
-        ])->getJsonApi('/api/v1/reference-data/federation-units');
+        ]);
 
         // Assert
         $response->assertStatus(200)
@@ -61,9 +61,9 @@ class FederationUnitsTest extends TestCase
     public function federation_units_are_cached_after_first_request(): void
     {
         // Arrange: First request
-        $this->withHeaders([
+        $this->getJsonApi('/api/v1/reference-data/federation-units', [
             'Authorization' => 'Bearer ' . $this->token,
-        ])->getJsonApi('/api/v1/reference-data/federation-units');
+        ]);
 
         // Assert: Data should be cached
         $this->assertTrue(Cache::tags(['reference_data', 'federation_units'])->has('federation_units.all'));
@@ -73,9 +73,9 @@ class FederationUnitsTest extends TestCase
     public function federation_units_return_etag_header(): void
     {
         // Act
-        $response = $this->withHeaders([
+        $response = $this->getJsonApi('/api/v1/reference-data/federation-units', [
             'Authorization' => 'Bearer ' . $this->token,
-        ])->getJsonApi('/api/v1/reference-data/federation-units');
+        ]);
 
         // Assert
         $response->assertHeader('ETag');
@@ -85,9 +85,9 @@ class FederationUnitsTest extends TestCase
     public function federation_units_return_304_when_etag_matches(): void
     {
         // Arrange: Get initial response with ETag
-        $initialResponse = $this->withHeaders([
+        $initialResponse = $this->getJsonApi('/api/v1/reference-data/federation-units', [
             'Authorization' => 'Bearer ' . $this->token,
-        ])->getJsonApi('/api/v1/reference-data/federation-units');
+        ]);
         $etag = $initialResponse->headers->get('ETag');
 
         // Act: Request with same ETag

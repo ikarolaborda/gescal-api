@@ -64,7 +64,7 @@ class BulkExportAction
     protected function fetchRecords(string $type, array $filters): mixed
     {
         $query = match ($type) {
-            'people' => Person::query(),
+            'persons' => Person::query(),
             'families' => Family::query(),
             'cases' => CaseRecord::query(),
             'benefits' => Benefit::query(),
@@ -94,7 +94,7 @@ class BulkExportAction
     protected function transformRecord(string $type, mixed $record): array
     {
         $resourceType = match ($type) {
-            'people' => 'persons',
+            'persons' => 'persons',
             'families' => 'families',
             'cases' => 'cases',
             'benefits' => 'benefits',

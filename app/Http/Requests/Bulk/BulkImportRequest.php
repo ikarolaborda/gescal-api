@@ -23,7 +23,7 @@ class BulkImportRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'people' => 'sometimes|array|max:1000',
+            'persons' => 'sometimes|array|max:1000',
             'people.*.full_name' => 'required|string|max:255',
             'people.*.sex' => 'required|in:Masculino,Feminino',
             'people.*.birth_date' => 'required|date|before:today',

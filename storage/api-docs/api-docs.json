@@ -729,6 +729,176 @@
         }
       }
     },
+    "/benefits": {
+      "get": {
+        "tags": [
+          "Benefits"
+        ],
+        "summary": "List benefits",
+        "operationId": "listBenefits",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/PageNumber"
+          },
+          {
+            "$ref": "#/components/parameters/PageSize"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of benefits",
+            "content": {
+              "application/vnd.api+json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "type": "object"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Benefits"
+        ],
+        "summary": "Create benefit",
+        "operationId": "createBenefit",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/vnd.api+json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "data"
+                ],
+                "properties": {
+                  "data": {
+                    "type": "object",
+                    "required": [
+                      "type",
+                      "attributes"
+                    ],
+                    "properties": {
+                      "type": {
+                        "type": "string",
+                        "enum": [
+                          "benefits"
+                        ]
+                      },
+                      "attributes": {
+                        "type": "object",
+                        "required": [
+                          "benefit_program_id",
+                          "value",
+                          "started_at"
+                        ],
+                        "properties": {
+                          "family_id": {
+                            "type": "integer",
+                            "nullable": true
+                          },
+                          "person_id": {
+                            "type": "integer",
+                            "nullable": true
+                          },
+                          "benefit_program_id": {
+                            "type": "integer"
+                          },
+                          "value": {
+                            "type": "number",
+                            "format": "float"
+                          },
+                          "is_active": {
+                            "type": "boolean",
+                            "default": false
+                          },
+                          "started_at": {
+                            "type": "string",
+                            "format": "date"
+                          },
+                          "ended_at": {
+                            "type": "string",
+                            "format": "date",
+                            "nullable": true
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Benefit created",
+            "content": {
+              "application/vnd.api+json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/benefits/{id}": {
+      "get": {
+        "tags": [
+          "Benefits"
+        ],
+        "summary": "Get benefit",
+        "operationId": "getBenefit",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Benefit details",
+            "content": {
+              "application/vnd.api+json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/bulk/export": {
       "post": {
         "tags": [

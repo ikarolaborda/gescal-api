@@ -7,6 +7,7 @@ use App\Models\Person;
 use App\Services\JsonApi\ErrorFormatterService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
+use Symfony\Component\HttpFoundation\Response;
 
 class DestroyController extends Controller
 {
@@ -15,10 +16,9 @@ class DestroyController extends Controller
         $person = Person::find($id);
 
         if (! $person) {
-            return response()->json(ErrorFormatterService::notFound('Person'), 404);
+            return response()->json(ErrorFormatterService::notFound('Person'), Response::HTTP_NOT_FOUND);
         }
 
-        // Soft delete the person
         DB::transaction(function () use ($person) {
             $person->delete();
 
@@ -33,6 +33,6 @@ class DestroyController extends Controller
             ]);
         });
 
-        return response()->json(null, 204);
+        return response()->json(null, Response::HTTP_NO_CONTENT);
     }
 }

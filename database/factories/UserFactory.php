@@ -3,6 +3,7 @@
 namespace Database\Factories;
 
 use App\Enums\UserRole;
+use App\Enums\UserStatus;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
@@ -31,6 +32,8 @@ class UserFactory extends Factory
             'password' => static::$password ??= Hash::make('password'),
             'remember_token' => Str::random(10),
             'role' => UserRole::SocialWorker,
+            'status' => UserStatus::Active,
+            'organization_id' => null,
         ];
     }
 
@@ -95,6 +98,78 @@ class UserFactory extends Factory
                     'assigned_at' => now(),
                 ]);
             }
+        });
+    }
+
+    /**
+     * Indicate that the user is pending approval.
+     */
+    public function pending(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'status' => UserStatus::Pending,
+            'cancellation_token' => Str::random(64),
+            'cancellation_token_expires_at' => now()->addHours(48),
+        ]);
+    }
+
+    /**
+     * Indicate that the user is active.
+     */
+    public function active(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'status' => UserStatus::Active,
+            'cancellation_token' => null,
+            'cancellation_token_expires_at' => null,
+            'rejection_reason' => null,
+        ]);
+    }
+
+    /**
+     * Indicate that the user is rejected.
+     */
+    public function rejected(?string $reason = null): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'status' => UserStatus::Rejected,
+            'rejection_reason' => $reason ?? 'Your registration request was rejected.',
+            'cancellation_token' => null,
+            'cancellation_token_expires_at' => null,
+        ]);
+    }
+
+    /**
+     * Associate the user with an organization.
+     */
+    public function withOrganization($organization = null): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'organization_id' => $organization?->id ?? \App\Models\Organization::factory()->create()->id,
+        ]);
+    }
+
+    /**
+     * Assign the user as an organization admin.
+     */
+    public function organizationAdmin(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'role' => UserRole::OrganizationAdmin,
+        ])->afterCreating(function (\App\Models\User $user): void {
+            $user->assignRole(UserRole::OrganizationAdmin->value);
+        });
+    }
+
+    /**
+     * Assign the user as an organization super admin.
+     */
+    public function organizationSuperAdmin(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'role' => UserRole::OrganizationSuperAdmin,
+        ])->afterCreating(function (\App\Models\User $user): void {
+            $user->assignRole(UserRole::OrganizationSuperAdmin->value);
         });
     }
 }

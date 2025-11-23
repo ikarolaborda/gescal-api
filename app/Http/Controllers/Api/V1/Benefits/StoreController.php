@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Benefits\StoreBenefitRequest;
 use App\Http\Resources\V1\BenefitResource;
 use Illuminate\Http\JsonResponse;
+use Symfony\Component\HttpFoundation\Response;
 
 class StoreController extends Controller
 {
@@ -20,7 +21,7 @@ class StoreController extends Controller
 
         return response()->json(
             (new BenefitResource($benefit))->toArray($request),
-            201
+            Response::HTTP_CREATED
         );
     }
 }

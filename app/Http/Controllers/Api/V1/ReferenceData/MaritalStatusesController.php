@@ -8,6 +8,7 @@ use App\Models\MaritalStatus;
 use App\Services\Cache\ReferenceDataCacheService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Symfony\Component\HttpFoundation\Response;
 
 class MaritalStatusesController extends Controller
 {
@@ -28,7 +29,7 @@ class MaritalStatusesController extends Controller
         $etag = $this->cacheService->generateEtag($resource->jsonSerialize());
 
         if ($request->header('If-None-Match') === $etag) {
-            return response()->json([], 304);
+            return response()->json([], Response::HTTP_NOT_MODIFIED);
         }
 
         return $resource->response()->header('ETag', $etag);

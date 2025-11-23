@@ -9,6 +9,7 @@ use App\Http\Resources\V1\PersonResource;
 use App\Models\Person;
 use App\Services\JsonApi\ErrorFormatterService;
 use Illuminate\Http\JsonResponse;
+use Symfony\Component\HttpFoundation\Response;
 
 class UpdateController extends Controller
 {
@@ -21,14 +22,14 @@ class UpdateController extends Controller
         $person = Person::find($id);
 
         if (! $person) {
-            return response()->json(ErrorFormatterService::notFound('Person'), 404);
+            return response()->json(ErrorFormatterService::notFound('Person'), Response::HTTP_NOT_FOUND);
         }
 
         $person = $this->updatePerson->execute($person, $request->validated());
 
         return response()->json(
             (new PersonResource($person))->toArray($request),
-            200
+            Response::HTTP_OK
         );
     }
 }

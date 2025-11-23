@@ -22,10 +22,8 @@ class ResubmitRequestAction
             throw new \InvalidArgumentException('Only requests in "pending documents" state can be resubmitted.');
         }
 
-        // Transition back to submitted state
         $approvalRequest->status->transitionTo(SubmittedState::class);
 
-        // Update metadata to track resubmission
         $metadata = $approvalRequest->metadata ?? [];
         $metadata['resubmitted_at'] = now()->toISOString();
         $metadata['resubmitted_by_user_id'] = $user->id;
@@ -34,10 +32,9 @@ class ResubmitRequestAction
             $metadata['documents_provided'] = $documentsProvided;
         }
 
-        // Keep original document request for audit trail
         if (isset($metadata['documents_requested'])) {
             $metadata['original_documents_requested'] = $metadata['documents_requested'];
-            unset($metadata['documents_requested']); // Clear pending request
+            unset($metadata['documents_requested']);
         }
 
         $approvalRequest->metadata = $metadata;

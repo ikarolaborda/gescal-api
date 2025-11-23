@@ -22,7 +22,6 @@ class DataExportController extends Controller
     {
         $person = Person::findOrFail($id);
 
-        // Authorization: User can only export their own data or admin/coordinator can export any
         $this->authorize('viewAny', Person::class);
 
         $exportData = $this->exportPersonDataAction->execute($person);

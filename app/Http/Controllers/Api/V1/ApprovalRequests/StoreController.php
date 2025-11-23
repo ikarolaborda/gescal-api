@@ -8,6 +8,7 @@ use App\Http\Resources\V1\ApprovalRequestResource;
 use App\Models\ApprovalRequest;
 use App\States\ApprovalRequest\DraftState;
 use Illuminate\Http\JsonResponse;
+use Symfony\Component\HttpFoundation\Response;
 
 class StoreController extends Controller
 {
@@ -22,7 +23,7 @@ class StoreController extends Controller
 
         return response()->json(
             (new ApprovalRequestResource($approvalRequest))->toArray($request),
-            201
+            Response::HTTP_CREATED
         );
     }
 }

@@ -8,6 +8,7 @@ use App\Http\Requests\ApprovalRequests\StartReviewRequest;
 use App\Http\Resources\V1\ApprovalRequestResource;
 use App\Models\ApprovalRequest;
 use Illuminate\Http\JsonResponse;
+use Symfony\Component\HttpFoundation\Response;
 
 class StartReviewController extends Controller
 {
@@ -25,7 +26,7 @@ class StartReviewController extends Controller
 
         return response()->json(
             (new ApprovalRequestResource($approvalRequest))->toArray($request),
-            200
+            Response::HTTP_OK
         );
     }
 }

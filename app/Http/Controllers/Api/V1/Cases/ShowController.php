@@ -8,6 +8,7 @@ use App\Models\CaseRecord;
 use App\Services\JsonApi\ErrorFormatterService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Symfony\Component\HttpFoundation\Response;
 
 class ShowController extends Controller
 {
@@ -16,17 +17,15 @@ class ShowController extends Controller
      */
     public function __invoke(Request $request, int $id): JsonResponse
     {
-        // Find the case
         $case = CaseRecord::find($id);
 
         if (! $case) {
             return response()->json(
                 ErrorFormatterService::notFound('Case'),
-                404
+                Response::HTTP_NOT_FOUND
             );
         }
 
-        // Parse includes from query parameter
         $includes = $request->query('include');
         $allowedIncludes = ['family', 'occurrence', 'housingUnit', 'benefits', 'socialReports'];
 
@@ -41,7 +40,7 @@ class ShowController extends Controller
 
         return response()->json(
             (new CaseResource($case))->toArray($request),
-            200
+            Response::HTTP_OK
         );
     }
 }

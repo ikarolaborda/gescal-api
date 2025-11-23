@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Enums\UserRole;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
@@ -29,6 +30,7 @@ class UserFactory extends Factory
             'email_verified_at' => now(),
             'password' => static::$password ??= Hash::make('password'),
             'remember_token' => Str::random(10),
+            'role' => UserRole::SocialWorker,
         ];
     }
 
@@ -47,7 +49,10 @@ class UserFactory extends Factory
      */
     public function socialWorker(): static
     {
-        return $this->afterCreating(function (\App\Models\User $user): void {
+        return $this->state(fn (array $attributes) => [
+            'role' => UserRole::SocialWorker,
+        ])->afterCreating(function (\App\Models\User $user): void {
+            // Also attach to legacy Role model for backward compatibility
             $role = \App\Models\Role::where('slug', 'social_worker')->first();
             if ($role) {
                 $user->roles()->attach($role->id, [
@@ -62,7 +67,10 @@ class UserFactory extends Factory
      */
     public function coordinator(): static
     {
-        return $this->afterCreating(function (\App\Models\User $user): void {
+        return $this->state(fn (array $attributes) => [
+            'role' => UserRole::Coordinator,
+        ])->afterCreating(function (\App\Models\User $user): void {
+            // Also attach to legacy Role model for backward compatibility
             $role = \App\Models\Role::where('slug', 'coordinator')->first();
             if ($role) {
                 $user->roles()->attach($role->id, [
@@ -77,7 +85,10 @@ class UserFactory extends Factory
      */
     public function admin(): static
     {
-        return $this->afterCreating(function (\App\Models\User $user): void {
+        return $this->state(fn (array $attributes) => [
+            'role' => UserRole::Admin,
+        ])->afterCreating(function (\App\Models\User $user): void {
+            // Also attach to legacy Role model for backward compatibility
             $role = \App\Models\Role::where('slug', 'admin')->first();
             if ($role) {
                 $user->roles()->attach($role->id, [

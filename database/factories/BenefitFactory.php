@@ -16,6 +16,8 @@ class BenefitFactory extends Factory
      */
     public function definition(): array
     {
+        $endDate = fake()->optional(0.3)->dateTimeBetween('now', '+1 year');
+
         return [
             'family_id' => \App\Models\Family::factory(),
             'person_id' => null,
@@ -23,7 +25,7 @@ class BenefitFactory extends Factory
             'value' => fake()->randomFloat(2, 100, 5000),
             'is_active' => fake()->boolean(80),
             'started_at' => fake()->dateTimeBetween('-1 year', 'now')->format('Y-m-d'),
-            'ended_at' => fake()->optional(0.3)->dateTimeBetween('now', '+1 year')->format('Y-m-d'),
+            'ended_at' => $endDate?->format('Y-m-d'),
         ];
     }
 }

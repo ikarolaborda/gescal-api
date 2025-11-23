@@ -69,5 +69,19 @@ Route::prefix('v1')->group(function (): void {
         // Bulk Operations
         Route::post('bulk/import', \App\Http\Controllers\Api\V1\Bulk\ImportController::class)->name('api.v1.bulk.import');
         Route::post('bulk/export', \App\Http\Controllers\Api\V1\Bulk\ExportController::class)->name('api.v1.bulk.export');
+
+        // Approval Requests
+        Route::get('approval-requests', \App\Http\Controllers\Api\V1\ApprovalRequests\IndexController::class)->name('api.v1.approval-requests.index');
+        Route::get('approval-requests/{approvalRequest}', \App\Http\Controllers\Api\V1\ApprovalRequests\ShowController::class)->name('api.v1.approval-requests.show');
+        Route::post('approval-requests', \App\Http\Controllers\Api\V1\ApprovalRequests\StoreController::class)->name('api.v1.approval-requests.store');
+        Route::post('approval-requests/{approvalRequest}/submit', \App\Http\Controllers\Api\V1\ApprovalRequests\SubmitController::class)->name('api.v1.approval-requests.submit');
+        Route::post('approval-requests/{approvalRequest}/start-review', \App\Http\Controllers\Api\V1\ApprovalRequests\StartReviewController::class)->name('api.v1.approval-requests.start-review');
+        Route::post('approval-requests/{approvalRequest}/approve', \App\Http\Controllers\Api\V1\ApprovalRequests\ApproveController::class)->name('api.v1.approval-requests.approve');
+        Route::post('approval-requests/{approvalRequest}/reject', \App\Http\Controllers\Api\V1\ApprovalRequests\RejectController::class)->name('api.v1.approval-requests.reject');
+        Route::post('approval-requests/{approvalRequest}/request-documents', \App\Http\Controllers\Api\V1\ApprovalRequests\RequestDocumentsController::class)->name('api.v1.approval-requests.request-documents');
+        Route::post('approval-requests/{approvalRequest}/resubmit', \App\Http\Controllers\Api\V1\ApprovalRequests\ResubmitController::class)->name('api.v1.approval-requests.resubmit');
+        Route::post('approval-requests/{approvalRequest}/cancel', \App\Http\Controllers\Api\V1\ApprovalRequests\CancelController::class)->name('api.v1.approval-requests.cancel');
+        Route::post('approval-requests/{approvalRequest}/revoke', \App\Http\Controllers\Api\V1\ApprovalRequests\RevokeController::class)->name('api.v1.approval-requests.revoke');
+        Route::post('approval-requests/{approvalRequest}/fast-track-approve', \App\Http\Controllers\Api\V1\ApprovalRequests\FastTrackApproveController::class)->name('api.v1.approval-requests.fast-track-approve');
     });
 });

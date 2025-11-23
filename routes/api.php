@@ -83,5 +83,11 @@ Route::prefix('v1')->group(function (): void {
         Route::post('approval-requests/{approvalRequest}/cancel', \App\Http\Controllers\Api\V1\ApprovalRequests\CancelController::class)->name('api.v1.approval-requests.cancel');
         Route::post('approval-requests/{approvalRequest}/revoke', \App\Http\Controllers\Api\V1\ApprovalRequests\RevokeController::class)->name('api.v1.approval-requests.revoke');
         Route::post('approval-requests/{approvalRequest}/fast-track-approve', \App\Http\Controllers\Api\V1\ApprovalRequests\FastTrackApproveController::class)->name('api.v1.approval-requests.fast-track-approve');
+
+        // Reports
+        Route::post('reports', [\App\Http\Controllers\Api\V1\ReportController::class, 'store'])->name('api.v1.reports.store');
+        Route::get('reports/history', [\App\Http\Controllers\Api\V1\ReportHistoryController::class, 'index'])->name('api.v1.reports.history');
+        Route::get('reports/{report}', [\App\Http\Controllers\Api\V1\ReportController::class, 'show'])->name('api.v1.reports.show');
+        Route::get('reports/{report}/download', [\App\Http\Controllers\Api\V1\ReportController::class, 'download'])->name('api.v1.reports.download');
     });
 });

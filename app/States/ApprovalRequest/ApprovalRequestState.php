@@ -3,10 +3,17 @@
 namespace App\States\ApprovalRequest;
 
 use Spatie\ModelStates\State;
+use Spatie\ModelStates\StateConfig;
 
 abstract class ApprovalRequestState extends State
 {
     abstract public static function name(): string;
+
+    public static function config(): StateConfig
+    {
+        return parent::config()
+            ->allowAllTransitions();
+    }
 
     public function isTerminal(): bool
     {

@@ -4,24 +4,41 @@ namespace Tests\Feature\ApprovalRequests;
 
 use App\Enums\UserRole;
 use App\Models\CaseRecord;
+use App\Models\Role;
 use App\Models\User;
 use App\States\ApprovalRequest\DraftState;
+use Database\Seeders\RoleSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
+use Tests\Traits\JsonApiTestHelpers;
 
 class StoreApprovalRequestTest extends TestCase
 {
-    use RefreshDatabase;
+    use JsonApiTestHelpers, RefreshDatabase;
+
+    private User $user;
+
+    private string $token;
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+        $this->seed(RoleSeeder::class);
+
+        $this->user = User::factory()->create(['role' => UserRole::SocialWorker]);
+        $this->user->roles()->attach(Role::where('slug', 'social_worker')->first());
+        $this->token = \Tymon\JWTAuth\Facades\JWTAuth::fromUser($this->user);
+    }
 
     public function test_social_worker_can_create_draft_approval_request(): void
     {
-        $user = User::factory()->create(['role' => UserRole::SocialWorker]);
         $case = CaseRecord::factory()->create();
 
-        $response = $this->actingAs($user)
-            ->postJson(route('api.v1.approval-requests.store'), [
-                'case_id' => $case->id,
-            ]);
+        $response = $this->postJsonApi(route('api.v1.approval-requests.store'), [
+            'case_id' => $case->id,
+        ], [
+            'Authorization' => 'Bearer ' . $this->token,
+        ]);
 
         $response->assertStatus(201)
             ->assertJsonStructure([
@@ -50,7 +67,7 @@ class StoreApprovalRequestTest extends TestCase
     {
         $case = CaseRecord::factory()->create();
 
-        $response = $this->postJson(route('api.v1.approval-requests.store'), [
+        $response = $this->postJsonApi(route('api.v1.approval-requests.store'), [
             'case_id' => $case->id,
         ]);
 
@@ -59,10 +76,9 @@ class StoreApprovalRequestTest extends TestCase
 
     public function test_case_id_is_required(): void
     {
-        $user = User::factory()->create(['role' => UserRole::SocialWorker]);
-
-        $response = $this->actingAs($user)
-            ->postJson(route('api.v1.approval-requests.store'), []);
+        $response = $this->postJsonApi(route('api.v1.approval-requests.store'), [], [
+            'Authorization' => 'Bearer ' . $this->token,
+        ]);
 
         $response->assertStatus(422)
             ->assertJsonValidationErrors(['case_id']);
@@ -70,12 +86,11 @@ class StoreApprovalRequestTest extends TestCase
 
     public function test_case_id_must_exist(): void
     {
-        $user = User::factory()->create(['role' => UserRole::SocialWorker]);
-
-        $response = $this->actingAs($user)
-            ->postJson(route('api.v1.approval-requests.store'), [
-                'case_id' => 999999,
-            ]);
+        $response = $this->postJsonApi(route('api.v1.approval-requests.store'), [
+            'case_id' => 999999,
+        ], [
+            'Authorization' => 'Bearer ' . $this->token,
+        ]);
 
         $response->assertStatus(422)
             ->assertJsonValidationErrors(['case_id']);

@@ -41,4 +41,49 @@ class UserFactory extends Factory
             'email_verified_at' => null,
         ]);
     }
+
+    /**
+     * Assign the user to the social_worker role.
+     */
+    public function socialWorker(): static
+    {
+        return $this->afterCreating(function (\App\Models\User $user): void {
+            $role = \App\Models\Role::where('slug', 'social_worker')->first();
+            if ($role) {
+                $user->roles()->attach($role->id, [
+                    'assigned_at' => now(),
+                ]);
+            }
+        });
+    }
+
+    /**
+     * Assign the user to the coordinator role.
+     */
+    public function coordinator(): static
+    {
+        return $this->afterCreating(function (\App\Models\User $user): void {
+            $role = \App\Models\Role::where('slug', 'coordinator')->first();
+            if ($role) {
+                $user->roles()->attach($role->id, [
+                    'assigned_at' => now(),
+                ]);
+            }
+        });
+    }
+
+    /**
+     * Assign the user to the admin role.
+     */
+    public function admin(): static
+    {
+        return $this->afterCreating(function (\App\Models\User $user): void {
+            $role = \App\Models\Role::where('slug', 'admin')->first();
+            if ($role) {
+                $user->roles()->attach($role->id, [
+                    'assigned_at' => now(),
+                ]);
+            }
+        });
+    }
 }

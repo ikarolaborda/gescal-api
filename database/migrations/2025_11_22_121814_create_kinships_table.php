@@ -6,9 +6,6 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up(): void
     {
         Schema::create('kinships', function (Blueprint $table) {
@@ -20,8 +17,8 @@ return new class extends Migration
                 'filha',
                 'irmao',
                 'irma',
-                'avô',
-                'avó',
+                'avo',
+                'avo_feminino',
                 'tio',
                 'tia',
                 'sobrinho',
@@ -31,6 +28,7 @@ return new class extends Migration
                 'sogro',
                 'sogra',
                 'genro',
+                'nora',
                 'esposa',
                 'marido',
                 'filho_adotivo',
@@ -40,15 +38,12 @@ return new class extends Migration
                 'bisneto',
                 'bisneta',
                 'nao_declarado',
-                'outro'
+                'outro',
             ]);
             $table->timestamps();
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
         Schema::dropIfExists('kinships');

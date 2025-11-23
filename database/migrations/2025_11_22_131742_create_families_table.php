@@ -30,7 +30,7 @@ return new class extends Migration
                 ->constrained('federation_units')
                 ->restrictOnDelete()
                 ->cascadeOnUpdate();
-            
+
             $table->string('family_income_bracket', 100)->nullable();
             $table->decimal('family_income_value', 10, 2)->nullable();
 

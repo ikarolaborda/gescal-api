@@ -41,7 +41,7 @@ return new class extends Migration
                 'SE',
                 'SP',
                 'TO',
-                'nao_declarado'
+                'nao_declarado',
             ]);
             $table->timestamps();
         });

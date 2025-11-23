@@ -15,8 +15,8 @@ class FamilyPerson extends Model
     protected function casts(): array
     {
         return [
-            'is_responsible'      => 'boolean',
-            'lives_in_household'  => 'boolean',
+            'is_responsible' => 'boolean',
+            'lives_in_household' => 'boolean',
         ];
     }
 

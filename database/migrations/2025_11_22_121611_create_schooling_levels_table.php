@@ -20,10 +20,9 @@ return new class extends Migration
                 'medio_completo',
                 'superior_incompleto',
                 'superior_completo',
-                'pos_graduacao_completo',
                 'pos_graduacao_incompleto',
                 'pos_graduacao_completo',
-                'nao_declarado'
+                'nao_declarado',
             ]);
             $table->timestamps();
         });

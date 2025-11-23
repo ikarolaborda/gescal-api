@@ -22,4 +22,15 @@
 Homestead.json
 Homestead.yaml
 Thumbs.db
-
+.mcp.json
+AGENTS.md
+DOCKER.md
+PHASE6-COMPLETION.md
+technical-docs/
+specs/
+.specify/
+.junie/
+.gemini/
+.cursor/
+.build-artifacts/
+boost.json

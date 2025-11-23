@@ -35,7 +35,6 @@ class BulkImportAction
 
         $results = [];
 
-        // Process each resource type in a separate transaction
         foreach ($data as $resourceType => $records) {
             $results[$resourceType] = $this->importResourceType($resourceType, $records);
         }
@@ -98,13 +97,11 @@ class BulkImportAction
                     }
                 }
 
-                // If any record failed, rollback all for this resource type
                 if ($failed > 0) {
                     throw new \Exception("Import failed for {$failed} {$type} records. Transaction rolled back.");
                 }
             });
         } catch (\Exception $e) {
-            // Transaction was rolled back
             return [
                 'created' => 0,
                 'failed' => count($records),

@@ -13,7 +13,6 @@ class ExportPersonDataAction
      */
     public function execute(Person $person): array
     {
-        // Load all relationships
         $person->load([
             'naturalFederationUnit',
             'raceEthnicity',
@@ -25,13 +24,11 @@ class ExportPersonDataAction
             'benefits.benefitProgram',
         ]);
 
-        // Build comprehensive data export
         return [
             'data' => [
                 'type' => 'person-data-export',
                 'id' => (string) $person->id,
                 'attributes' => [
-                    // Personal Information
                     'personal_information' => [
                         'full_name' => $person->full_name,
                         'sex' => $person->sex,
@@ -45,14 +42,12 @@ class ExportPersonDataAction
                         'schooling_level' => $person->schoolingLevel?->schooling_level,
                     ],
 
-                    // Contact Information
                     'contact_information' => [
                         'primary_phone' => $person->primary_phone,
                         'secondary_phone' => $person->secondary_phone,
                         'email' => $person->email,
                     ],
 
-                    // Documents
                     'documents' => $person->documents->map(fn ($doc) => [
                         'type' => $doc->documentType?->document_type,
                         'number' => $doc->document_number,
@@ -61,7 +56,6 @@ class ExportPersonDataAction
                         'created_at' => $doc->created_at?->toIso8601String(),
                     ])->toArray(),
 
-                    // Families
                     'families' => $person->families->map(fn ($family) => [
                         'id' => $family->id,
                         'origin_city' => $family->origin_city,
@@ -80,7 +74,6 @@ class ExportPersonDataAction
                         'created_at' => $family->created_at?->toIso8601String(),
                     ])->toArray(),
 
-                    // Benefits
                     'benefits' => $person->benefits->map(fn ($benefit) => [
                         'program' => $benefit->benefitProgram->name,
                         'value' => $benefit->value,
@@ -90,7 +83,6 @@ class ExportPersonDataAction
                         'created_at' => $benefit->created_at?->toIso8601String(),
                     ])->toArray(),
 
-                    // Metadata
                     'metadata' => [
                         'created_at' => $person->created_at?->toIso8601String(),
                         'updated_at' => $person->updated_at?->toIso8601String(),

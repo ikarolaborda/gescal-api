@@ -8,6 +8,7 @@ use App\Models\Benefit;
 use App\Services\JsonApi\QueryBuilderService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Symfony\Component\HttpFoundation\Response;
 
 class IndexController extends Controller
 {
@@ -39,6 +40,6 @@ class IndexController extends Controller
                 'to' => $benefits->lastItem(),
                 'total' => $benefits->total(),
             ],
-        ], 200);
+        ], Response::HTTP_OK);
     }
 }

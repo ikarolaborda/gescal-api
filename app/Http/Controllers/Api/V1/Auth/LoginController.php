@@ -6,6 +6,7 @@ use App\Actions\Auth\AuthenticateUserAction;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\LoginRequest;
 use Illuminate\Http\JsonResponse;
+use Symfony\Component\HttpFoundation\Response;
 
 class LoginController extends Controller
 {
@@ -58,6 +59,6 @@ class LoginController extends Controller
                     ],
                 ],
             ],
-        ], 200);
+        ], Response::HTTP_OK);
     }
 }

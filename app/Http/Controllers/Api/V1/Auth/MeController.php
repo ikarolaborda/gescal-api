@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api\V1\Auth;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Symfony\Component\HttpFoundation\Response;
 
 class MeController extends Controller
 {
@@ -44,6 +45,6 @@ class MeController extends Controller
                     'description' => $role->description,
                 ],
             ])->toArray(),
-        ], 200);
+        ], Response::HTTP_OK);
     }
 }

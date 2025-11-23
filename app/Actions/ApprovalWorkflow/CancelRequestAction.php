@@ -23,7 +23,6 @@ class CancelRequestAction
 
         $oldStatus = $approvalRequest->status::name();
 
-        // Transition to cancelled state
         $approvalRequest->status->transitionTo(CancelledState::class);
         $approvalRequest->decided_by_user_id = $user->id;
         $approvalRequest->decided_at = now();

@@ -6,6 +6,7 @@ use App\Actions\Auth\RefreshTokenAction;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\RefreshRequest;
 use Illuminate\Http\JsonResponse;
+use Symfony\Component\HttpFoundation\Response;
 
 class RefreshController extends Controller
 {
@@ -29,6 +30,6 @@ class RefreshController extends Controller
                     'expires_in' => $result['expires_in'],
                 ],
             ],
-        ], 200);
+        ], Response::HTTP_OK);
     }
 }

@@ -25,6 +25,8 @@ return Application::configure(basePath: dirname(__DIR__))
             'role.check' => \App\Http\Middleware\RoleAuthorization::class,
             'jsonapi.headers' => \App\Http\Middleware\JsonApiHeaders::class,
             'api.deprecation' => \App\Http\Middleware\ApiDeprecationMiddleware::class,
+            'organization.ownership' => \App\Http\Middleware\EnsureOrganizationOwnership::class,
+            'rate.limit.registration' => \App\Http\Middleware\RateLimitRegistration::class,
         ]);
 
         // Apply deprecation middleware to all API routes

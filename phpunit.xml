@@ -32,7 +32,7 @@
         <env name="TELESCOPE_ENABLED" value="false"/>
         <env name="NIGHTWATCH_ENABLED" value="false"/>
         <env name="REDIS_CLIENT" value="predis"/>
-        <env name="REDIS_HOST" value="127.0.0.1"/>
+        <env name="REDIS_HOST" value="redis"/>
         <env name="JWT_SECRET" value="test_secret_key_for_jwt_auth_testing_purposes_only"/>
         <env name="JWT_TTL" value="60"/>
     </php>

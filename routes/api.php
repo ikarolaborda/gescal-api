@@ -98,5 +98,26 @@ Route::prefix('v1')->group(function (): void {
         Route::post('approval-requests/{approvalRequest}/cancel', \App\Http\Controllers\Api\V1\ApprovalRequests\CancelController::class)->name('api.v1.approval-requests.cancel');
         Route::post('approval-requests/{approvalRequest}/revoke', \App\Http\Controllers\Api\V1\ApprovalRequests\RevokeController::class)->name('api.v1.approval-requests.revoke');
         Route::post('approval-requests/{approvalRequest}/fast-track-approve', \App\Http\Controllers\Api\V1\ApprovalRequests\FastTrackApproveController::class)->name('api.v1.approval-requests.fast-track-approve');
+
+        // Reports
+        Route::post('reports', [\App\Http\Controllers\Api\V1\ReportController::class, 'store'])->name('api.v1.reports.store');
+        Route::get('reports/history', [\App\Http\Controllers\Api\V1\ReportHistoryController::class, 'index'])->name('api.v1.reports.history');
+        Route::get('reports/{report}', [\App\Http\Controllers\Api\V1\ReportController::class, 'show'])->name('api.v1.reports.show');
+        Route::get('reports/{report}/download', [\App\Http\Controllers\Api\V1\ReportController::class, 'download'])->name('api.v1.reports.download');
+
+        // Report Schedules
+        Route::get('report-schedules', [\App\Http\Controllers\Api\V1\ReportScheduleController::class, 'index'])->name('api.v1.report-schedules.index');
+        Route::post('report-schedules', [\App\Http\Controllers\Api\V1\ReportScheduleController::class, 'store'])->name('api.v1.report-schedules.store');
+        Route::get('report-schedules/{reportSchedule}', [\App\Http\Controllers\Api\V1\ReportScheduleController::class, 'show'])->name('api.v1.report-schedules.show');
+        Route::patch('report-schedules/{reportSchedule}', [\App\Http\Controllers\Api\V1\ReportScheduleController::class, 'update'])->name('api.v1.report-schedules.update');
+        Route::delete('report-schedules/{reportSchedule}', [\App\Http\Controllers\Api\V1\ReportScheduleController::class, 'destroy'])->name('api.v1.report-schedules.destroy');
+        Route::get('report-schedules/{reportSchedule}/executions', [\App\Http\Controllers\Api\V1\ReportScheduleController::class, 'executions'])->name('api.v1.report-schedules.executions');
+
+        // Report Templates
+        Route::get('report-templates', [\App\Http\Controllers\Api\V1\ReportTemplateController::class, 'index'])->name('api.v1.report-templates.index');
+        Route::post('report-templates', [\App\Http\Controllers\Api\V1\ReportTemplateController::class, 'store'])->name('api.v1.report-templates.store');
+        Route::get('report-templates/{reportTemplate}', [\App\Http\Controllers\Api\V1\ReportTemplateController::class, 'show'])->name('api.v1.report-templates.show');
+        Route::patch('report-templates/{reportTemplate}', [\App\Http\Controllers\Api\V1\ReportTemplateController::class, 'update'])->name('api.v1.report-templates.update');
+        Route::delete('report-templates/{reportTemplate}', [\App\Http\Controllers\Api\V1\ReportTemplateController::class, 'destroy'])->name('api.v1.report-templates.destroy');
     });
 });

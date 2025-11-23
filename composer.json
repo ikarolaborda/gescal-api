@@ -10,10 +10,12 @@
     "license": "MIT",
     "require": {
         "php": "^8.2",
+        "barryvdh/laravel-dompdf": "*",
         "lacus/cnpj-utils": "*",
         "laravel/framework": "^12.0",
         "laravel/horizon": "^5.40",
         "laravel/tinker": "^2.10.1",
+        "maatwebsite/excel": "*",
         "predis/predis": "^3.2",
         "spatie/laravel-activitylog": "^4.0",
         "spatie/laravel-model-states": "^2.12",

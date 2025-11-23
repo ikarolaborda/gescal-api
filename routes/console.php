@@ -13,3 +13,6 @@ Schedule::command('lgpd:hard-delete-expired --force')->dailyAt('02:00');
 
 // Schedule expired token cleanup to run daily at 3 AM
 Schedule::command('tokens:cleanup-expired')->dailyAt('03:00');
+
+// Schedule report execution check to run every minute
+Schedule::command('reports:execute-scheduled')->everyMinute();

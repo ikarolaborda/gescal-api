@@ -69,5 +69,11 @@ Route::prefix('v1')->group(function (): void {
         // Bulk Operations
         Route::post('bulk/import', \App\Http\Controllers\Api\V1\Bulk\ImportController::class)->name('api.v1.bulk.import');
         Route::post('bulk/export', \App\Http\Controllers\Api\V1\Bulk\ExportController::class)->name('api.v1.bulk.export');
+
+        // Approval Requests
+        Route::get('approval-requests', \App\Http\Controllers\Api\V1\ApprovalRequests\IndexController::class)->name('api.v1.approval-requests.index');
+        Route::get('approval-requests/{approvalRequest}', \App\Http\Controllers\Api\V1\ApprovalRequests\ShowController::class)->name('api.v1.approval-requests.show');
+        Route::post('approval-requests', \App\Http\Controllers\Api\V1\ApprovalRequests\StoreController::class)->name('api.v1.approval-requests.store');
+        Route::post('approval-requests/{approvalRequest}/submit', \App\Http\Controllers\Api\V1\ApprovalRequests\SubmitController::class)->name('api.v1.approval-requests.submit');
     });
 });

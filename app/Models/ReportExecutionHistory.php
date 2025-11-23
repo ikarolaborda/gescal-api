@@ -16,6 +16,8 @@ class ReportExecutionHistory extends Model
     {
         return [
             'executed_at' => 'datetime',
+            'started_at' => 'datetime',
+            'completed_at' => 'datetime',
         ];
     }
 

@@ -10,3 +10,6 @@ Artisan::command('inspire', function () {
 
 // Schedule LGPD hard delete cleanup command to run daily at 2 AM
 Schedule::command('lgpd:hard-delete-expired --force')->dailyAt('02:00');
+
+// Schedule report execution check to run every minute
+Schedule::command('reports:execute-scheduled')->everyMinute();

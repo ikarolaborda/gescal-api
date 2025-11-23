@@ -18,7 +18,6 @@ class ReportSchedule extends Model
     {
         return [
             'frequency' => ReportFrequency::class,
-            'execution_time' => 'datetime:H:i:s',
             'recipients' => 'array',
             'parameters' => 'array',
             'last_execution_at' => 'datetime',

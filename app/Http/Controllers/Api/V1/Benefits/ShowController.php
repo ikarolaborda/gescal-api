@@ -8,6 +8,7 @@ use App\Models\Benefit;
 use App\Services\JsonApi\ErrorFormatterService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Symfony\Component\HttpFoundation\Response;
 
 class ShowController extends Controller
 {
@@ -16,7 +17,7 @@ class ShowController extends Controller
         $benefit = Benefit::find($id);
 
         if (! $benefit) {
-            return response()->json(ErrorFormatterService::notFound('Benefit'), 404);
+            return response()->json(ErrorFormatterService::notFound('Benefit'), Response::HTTP_NOT_FOUND);
         }
 
         $includes = $request->query('include');
@@ -30,6 +31,6 @@ class ShowController extends Controller
             }
         }
 
-        return response()->json((new BenefitResource($benefit))->toArray($request), 200);
+        return response()->json((new BenefitResource($benefit))->toArray($request), Response::HTTP_OK);
     }
 }

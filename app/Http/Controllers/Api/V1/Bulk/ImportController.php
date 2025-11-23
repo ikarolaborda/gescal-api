@@ -6,6 +6,7 @@ use App\Actions\Bulk\BulkImportAction;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Bulk\BulkImportRequest;
 use Illuminate\Http\JsonResponse;
+use Symfony\Component\HttpFoundation\Response;
 
 class ImportController extends Controller
 {
@@ -31,6 +32,6 @@ class ImportController extends Controller
                     'timestamp' => now()->toIso8601String(),
                 ],
             ],
-        ], $hasFailures ? 422 : 200);
+        ], $hasFailures ? Response::HTTP_UNPROCESSABLE_ENTITY : Response::HTTP_OK);
     }
 }

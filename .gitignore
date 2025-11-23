@@ -33,5 +33,6 @@ specs/
 .junie/
 .gemini/
 .cursor/
+.claude/
 .build-artifacts/
 boost.json

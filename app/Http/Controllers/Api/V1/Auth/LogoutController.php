@@ -6,6 +6,7 @@ use App\Actions\Auth\RevokeTokenAction;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Symfony\Component\HttpFoundation\Response;
 
 class LogoutController extends Controller
 {
@@ -27,6 +28,6 @@ class LogoutController extends Controller
                     'message' => 'Successfully logged out',
                 ],
             ],
-        ], 200);
+        ], Response::HTTP_OK);
     }
 }

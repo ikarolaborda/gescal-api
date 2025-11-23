@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "81c027331d8b703d79114800d8df041e",
+    "content-hash": "36ca5945787540ac0141f19818375124",
     "packages": [
         {
             "name": "brick/math",
@@ -1104,6 +1104,252 @@
                 }
             ],
             "time": "2025-08-22T14:27:06+00:00"
+        },
+        {
+            "name": "lacus/cnpj-fmt",
+            "version": "1.0.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/LacusSolutions/br-utils-php_cnpj-fmt.git",
+                "reference": "f69bea939f30bceece3f23bd2b7e78b012d1e1a9"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/LacusSolutions/br-utils-php_cnpj-fmt/zipball/f69bea939f30bceece3f23bd2b7e78b012d1e1a9",
+                "reference": "f69bea939f30bceece3f23bd2b7e78b012d1e1a9",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=8.1"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "^10.5",
+                "spatie/phpunit-watcher": "~1.24"
+            },
+            "type": "library",
+            "autoload": {
+                "files": [
+                    "src/cnpj-fmt.php"
+                ],
+                "psr-4": {
+                    "Lacus\\CnpjFmt\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Julio L. Muller",
+                    "email": "juliolmuller@outlook.com",
+                    "homepage": "https://juliolmuller.github.io"
+                }
+            ],
+            "description": "Utility function to format CNPJ (Brazilian employer ID)",
+            "homepage": "https://cnpj-utils.vercel.app/",
+            "keywords": [
+                "Formatar",
+                "br",
+                "cnpj",
+                "format",
+                "formatting",
+                "mascara",
+                "mask",
+                "pt-BR"
+            ],
+            "support": {
+                "issues": "https://github.com/LacusSolutions/br-utils-php/issues",
+                "source": "https://github.com/LacusSolutions/br-utils-php"
+            },
+            "time": "2025-10-12T05:20:11+00:00"
+        },
+        {
+            "name": "lacus/cnpj-gen",
+            "version": "1.0.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/LacusSolutions/br-utils-php_cnpj-gen.git",
+                "reference": "411913d50a79d0a1cb0771faa9e9bd87016deaff"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/LacusSolutions/br-utils-php_cnpj-gen/zipball/411913d50a79d0a1cb0771faa9e9bd87016deaff",
+                "reference": "411913d50a79d0a1cb0771faa9e9bd87016deaff",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=8.1"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "^10.5",
+                "spatie/phpunit-watcher": "~1.24"
+            },
+            "type": "library",
+            "autoload": {
+                "files": [
+                    "src/cnpj-gen.php"
+                ],
+                "psr-4": {
+                    "Lacus\\CnpjGen\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Julio L. Muller",
+                    "email": "juliolmuller@outlook.com",
+                    "homepage": "https://juliolmuller.github.io"
+                }
+            ],
+            "description": "Utility function to generate valid CNPJ (Brazilian employer ID)",
+            "homepage": "https://cnpj-utils.vercel.app/",
+            "keywords": [
+                "br",
+                "cnpj",
+                "fake",
+                "faker",
+                "generate",
+                "generator",
+                "gerador",
+                "gerar",
+                "pt-BR"
+            ],
+            "support": {
+                "issues": "https://github.com/LacusSolutions/br-utils-php/issues",
+                "source": "https://github.com/LacusSolutions/br-utils-php"
+            },
+            "time": "2025-10-13T10:53:49+00:00"
+        },
+        {
+            "name": "lacus/cnpj-utils",
+            "version": "1.1.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/LacusSolutions/br-utils-php_cnpj-utils.git",
+                "reference": "25320aa87028357c06b9d77983cddd6b848d96cb"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/LacusSolutions/br-utils-php_cnpj-utils/zipball/25320aa87028357c06b9d77983cddd6b848d96cb",
+                "reference": "25320aa87028357c06b9d77983cddd6b848d96cb",
+                "shasum": ""
+            },
+            "require": {
+                "lacus/cnpj-fmt": "^1.0",
+                "lacus/cnpj-gen": "^1.0",
+                "lacus/cnpj-val": "^1.0",
+                "php": ">=8.1"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "^10.5",
+                "spatie/phpunit-watcher": "~1.24"
+            },
+            "type": "library",
+            "autoload": {
+                "files": [
+                    "src/cnpj_utils.php"
+                ],
+                "psr-4": {
+                    "Lacus\\CnpjUtils\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Julio L. Muller",
+                    "email": "juliolmuller@outlook.com",
+                    "homepage": "https://juliolmuller.github.io"
+                }
+            ],
+            "description": "Utility functions to deal with CNPJ (Brazilian employer ID)",
+            "homepage": "https://cpf-utils.vercel.app/",
+            "keywords": [
+                "Formatar",
+                "br",
+                "cnpj",
+                "format",
+                "generate",
+                "generator",
+                "gerador",
+                "gerar",
+                "pt-BR",
+                "validador",
+                "validar",
+                "validate",
+                "validation"
+            ],
+            "support": {
+                "issues": "https://github.com/LacusSolutions/br-utils-php/issues",
+                "source": "https://github.com/LacusSolutions/br-utils-php"
+            },
+            "time": "2025-10-20T13:47:24+00:00"
+        },
+        {
+            "name": "lacus/cnpj-val",
+            "version": "1.0.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/LacusSolutions/br-utils-php_cnpj-val.git",
+                "reference": "3990529cdd64dd47fcd4447d6db5a1e1f743e2fb"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/LacusSolutions/br-utils-php_cnpj-val/zipball/3990529cdd64dd47fcd4447d6db5a1e1f743e2fb",
+                "reference": "3990529cdd64dd47fcd4447d6db5a1e1f743e2fb",
+                "shasum": ""
+            },
+            "require": {
+                "lacus/cnpj-gen": "^1.0",
+                "php": ">=8.1"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "^10.5",
+                "spatie/phpunit-watcher": "~1.24"
+            },
+            "type": "library",
+            "autoload": {
+                "files": [
+                    "src/cnpj-val.php"
+                ],
+                "psr-4": {
+                    "Lacus\\CnpjVal\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Julio L. Muller",
+                    "email": "juliolmuller@outlook.com",
+                    "homepage": "https://juliolmuller.github.io"
+                }
+            ],
+            "description": "Utility function to validate CNPJ (Brazilian employer ID)",
+            "homepage": "https://cnpj-utils.vercel.app/",
+            "keywords": [
+                "br",
+                "cnpj",
+                "pt-BR",
+                "valid",
+                "validador",
+                "validar",
+                "validate",
+                "validator"
+            ],
+            "support": {
+                "issues": "https://github.com/LacusSolutions/br-utils-php/issues",
+                "source": "https://github.com/LacusSolutions/br-utils-php"
+            },
+            "time": "2025-10-12T05:20:11+00:00"
         },
         {
             "name": "laravel/framework",

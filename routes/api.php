@@ -22,6 +22,11 @@ Route::prefix('v1')->group(function (): void {
     // Authentication routes (public, no JWT required)
     Route::prefix('auth')->group(function (): void {
         Route::post('login', LoginController::class)->name('api.v1.auth.login');
+        Route::post('register', \App\Http\Controllers\Api\V1\Auth\RegisterController::class)
+            ->middleware('rate.limit.registration')
+            ->name('api.v1.auth.register');
+        Route::delete('cancel-registration', \App\Http\Controllers\Api\V1\Auth\CancelRegistrationController::class)
+            ->name('api.v1.auth.cancel-registration');
 
         // Protected routes (JWT required)
         Route::middleware('jwt.auth')->group(function (): void {
@@ -29,6 +34,16 @@ Route::prefix('v1')->group(function (): void {
             Route::post('logout', LogoutController::class)->name('api.v1.auth.logout');
             Route::get('me', MeController::class)->name('api.v1.auth.me');
         });
+    });
+
+    // Organization management routes (JWT required)
+    Route::prefix('organizations')->middleware(['jwt.auth', 'jsonapi.headers', 'organization.ownership'])->group(function (): void {
+        Route::get('{org}/pending-users', \App\Http\Controllers\Api\V1\Organizations\PendingUsersController::class)
+            ->name('api.v1.organizations.pending-users');
+        Route::post('{org}/users/{user}/approve', \App\Http\Controllers\Api\V1\Organizations\ApproveUserController::class)
+            ->name('api.v1.organizations.users.approve');
+        Route::post('{org}/users/{user}/reject', \App\Http\Controllers\Api\V1\Organizations\RejectUserController::class)
+            ->name('api.v1.organizations.users.reject');
     });
 
     // Public Reference Data routes (no auth required, cached)

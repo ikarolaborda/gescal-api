@@ -7,6 +7,7 @@ use App\Models\Family;
 use App\Services\JsonApi\ErrorFormatterService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
+use Symfony\Component\HttpFoundation\Response;
 
 class DestroyController extends Controller
 {
@@ -15,10 +16,9 @@ class DestroyController extends Controller
         $family = Family::find($id);
 
         if (! $family) {
-            return response()->json(ErrorFormatterService::notFound('Family'), 404);
+            return response()->json(ErrorFormatterService::notFound('Family'), Response::HTTP_NOT_FOUND);
         }
 
-        // Soft delete the family
         DB::transaction(function () use ($family) {
             $family->delete();
 
@@ -33,6 +33,6 @@ class DestroyController extends Controller
             ]);
         });
 
-        return response()->json(null, 204);
+        return response()->json(null, Response::HTTP_NO_CONTENT);
     }
 }

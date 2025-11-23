@@ -8,6 +8,7 @@ use App\Models\CaseRecord;
 use App\Services\JsonApi\QueryBuilderService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Symfony\Component\HttpFoundation\Response;
 
 class IndexController extends Controller
 {
@@ -16,7 +17,6 @@ class IndexController extends Controller
      */
     public function __invoke(Request $request): JsonResponse
     {
-        // Define allowed filters, sorts, and includes
         $query = QueryBuilderService::for(
             CaseRecord::class,
             allowedFilters: [
@@ -43,7 +43,6 @@ class IndexController extends Controller
             ]
         );
 
-        // Paginate results
         $perPage = min((int) $request->get('page.size', 25), 100);
         $cases = $query->paginate($perPage);
 
@@ -63,6 +62,6 @@ class IndexController extends Controller
                 'to' => $cases->lastItem(),
                 'total' => $cases->total(),
             ],
-        ], 200);
+        ], Response::HTTP_OK);
     }
 }

@@ -8,6 +8,7 @@ use App\Models\Person;
 use App\Services\JsonApi\ErrorFormatterService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Symfony\Component\HttpFoundation\Response;
 
 class ShowController extends Controller
 {
@@ -16,7 +17,7 @@ class ShowController extends Controller
         $person = Person::find($id);
 
         if (! $person) {
-            return response()->json(ErrorFormatterService::notFound('Person'), 404);
+            return response()->json(ErrorFormatterService::notFound('Person'), Response::HTTP_NOT_FOUND);
         }
 
         $includes = $request->query('include');
@@ -30,6 +31,6 @@ class ShowController extends Controller
             }
         }
 
-        return response()->json((new PersonResource($person))->toArray($request), 200);
+        return response()->json((new PersonResource($person))->toArray($request), Response::HTTP_OK);
     }
 }

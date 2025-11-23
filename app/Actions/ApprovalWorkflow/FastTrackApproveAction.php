@@ -28,15 +28,13 @@ class FastTrackApproveAction
 
         $oldStatus = $approvalRequest->status::name();
 
-        // Store fast-track metadata
         $metadata = $approvalRequest->metadata ?? [];
         $metadata['emergency_approval'] = true;
         $metadata['fast_track_justification'] = $justification;
         $metadata['fast_track_at'] = now()->toISOString();
         $metadata['fast_track_by_user_id'] = $user->id;
-        $metadata['requires_confirmation'] = true; // May need manual review later
+        $metadata['requires_confirmation'] = true;
 
-        // Transition to preliminary approved state
         $approvalRequest->status->transitionTo(ApprovedPrelimState::class);
         $approvalRequest->submitted_by_user_id = $approvalRequest->submitted_by_user_id ?? $user->id;
         $approvalRequest->decided_by_user_id = $user->id;
@@ -44,7 +42,6 @@ class FastTrackApproveAction
         $approvalRequest->metadata = $metadata;
         $approvalRequest->save();
 
-        // Side effect: Activate benefit immediately if linked
         if ($approvalRequest->benefit) {
             $approvalRequest->benefit->update([
                 'is_active' => true,

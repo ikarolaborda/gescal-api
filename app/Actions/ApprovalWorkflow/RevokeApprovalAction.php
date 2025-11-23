@@ -28,14 +28,12 @@ class RevokeApprovalAction
 
         $oldStatus = $approvalRequest->status::name();
 
-        // Store original approval metadata
         $metadata = $approvalRequest->metadata ?? [];
         $metadata['revoked_at'] = now()->toISOString();
         $metadata['revoked_by_user_id'] = $user->id;
         $metadata['original_approval_date'] = $approvalRequest->decided_at?->toISOString();
         $metadata['original_decided_by_user_id'] = $approvalRequest->decided_by_user_id;
 
-        // Transition to revoked state
         $approvalRequest->status->transitionTo(RevokedState::class);
         $approvalRequest->decided_by_user_id = $user->id;
         $approvalRequest->decided_at = now();
@@ -43,7 +41,6 @@ class RevokeApprovalAction
         $approvalRequest->metadata = $metadata;
         $approvalRequest->save();
 
-        // Side effect: Deactivate benefit if it was activated
         if ($approvalRequest->benefit) {
             $approvalRequest->benefit->update([
                 'is_active' => false,

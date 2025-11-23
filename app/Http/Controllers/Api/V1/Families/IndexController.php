@@ -4,9 +4,11 @@ namespace App\Http\Controllers\Api\V1\Families;
 
 use App\Http\Controllers\Controller;
 use App\Http\Resources\V1\FamilyResource;
+use App\Models\Family;
 use App\Services\JsonApi\QueryBuilderService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Symfony\Component\HttpFoundation\Response;
 
 class IndexController extends Controller
 {
@@ -38,6 +40,6 @@ class IndexController extends Controller
                 'to' => $families->lastItem(),
                 'total' => $families->total(),
             ],
-        ], 200);
+        ], Response::HTTP_OK);
     }
 }

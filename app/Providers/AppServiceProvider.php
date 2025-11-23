@@ -6,9 +6,11 @@ use App\Models\Address;
 use App\Models\Document;
 use App\Models\Family;
 use App\Models\Person;
+use App\Models\Report;
 use App\Observers\FamilyObserver;
 use App\Observers\PersonObserver;
 use App\Observers\PIIAccessObserver;
+use App\Observers\ReportObserver;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -29,6 +31,7 @@ class AppServiceProvider extends ServiceProvider
         // Register model observers for business rules
         Person::observe(PersonObserver::class);
         Family::observe(FamilyObserver::class);
+        Report::observe(ReportObserver::class);
 
         // Register PII access logging observers
         if (config('lgpd.audit.enabled', true)) {

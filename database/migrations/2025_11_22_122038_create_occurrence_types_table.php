@@ -29,7 +29,7 @@ return new class extends Migration
                 'enxurrada',
                 'terremoto',
                 'outro',
-                'nao_declarado'
+                'nao_declarado',
             ]);
             $table->timestamps();
         });

@@ -20,7 +20,7 @@ return new class extends Migration
                 'cnh',
                 'passaporte',
                 'outro',
-                'nao_declarado'
+                'nao_declarado',
             ]);
             $table->timestamps();
         });

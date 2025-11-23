@@ -1,43 +1,255 @@
-# Sistema de Gestão Social e Calamidades
+# GESCAL API - Sistema de Gestão Social e Calamidades
 
-## Visão Geral
+[![Laravel](https://img.shields.io/badge/Laravel-12.x-red.svg)](https://laravel.com)
+[![PHP](https://img.shields.io/badge/PHP-8.4-blue.svg)](https://php.net)
+[![JSON:API](https://img.shields.io/badge/JSON%3AAPI-1.1-green.svg)](https://jsonapi.org/)
+[![License](https://img.shields.io/badge/license-Proprietary-yellow.svg)]()
 
-Este projeto é um sistema de apoio à gestão socioassistencial e de calamidades, com foco em:
+## 📋 Visão Geral
 
-- **Cadastro de pessoas e famílias**
-- **Acompanhamento de ocorrências (desastres / riscos)**
-- **Condições de moradia (unidades habitacionais)**
-- **Benefícios e programas sociais (incluindo benefícios associados a calamidades)**
-- **Registros de casos / atendimentos e respectivos relatórios sociais**
+Sistema de apoio à gestão socioassistencial e de calamidades, desenvolvido com foco em conformidade com LGPD e boas práticas de desenvolvimento. O sistema oferece:
 
-A modelagem de dados foi inspirada em fichas sociais padronizadas (ex.: Ficha Social padrão 2023) e nas diretrizes do SUAS, com preocupação em:
-
-- Normalização forte (pessoas, famílias, endereços, benefícios, etc.)
-- Separação clara entre **família**, **pessoa**, **ocorrência** e **caso**
-- Flexibilidade em alguns cadastros (ex.: tipos de benefícios)
+- ✅ **Cadastro de pessoas e famílias** com PII protegida
+- ✅ **Gestão de casos de atendimento** a desastres e calamidades
+- ✅ **Programas de benefícios sociais** e acompanhamento
+- ✅ **API REST JSON:API compliant** com versionamento
+- ✅ **Autenticação JWT** com controle de acesso baseado em roles
+- ✅ **Notificações por email** para coordenadores
+- ✅ **Operações em massa** (import/export)
+- ✅ **Compliance LGPD** com exportação de dados e retenção configurável
 
 ---
 
-## Stack Tecnológica
+## 🚀 Quick Start
+
+### Pré-requisitos
+
+- Docker & Docker Compose
+- Make (opcional, mas recomendado)
+
+### Instalação com Docker
+
+```bash
+# Clone o repositório
+git clone <repository-url>
+cd gescal-api
+
+# Configure o ambiente
+cp .env.example .env
+# Edite .env com suas configurações
+
+# Inicie os containers
+make up
+# ou: docker-compose up -d
+
+# Instale dependências e rode migrações
+make install
+# ou: docker-compose exec app composer install
+#      docker-compose exec app php artisan migrate
+
+# Crie dados de teste
+make seed
+# ou: docker-compose exec app php artisan db:seed
+```
+
+A API estará disponível em: `http://localhost:8000`
+
+### Primeiro Acesso
+
+```bash
+# Criar usuário administrador
+docker-compose exec app php artisan tinker
+>>> $user = User::factory()->create(['email' => 'admin@gescal.gov.br']);
+>>> $user->roles()->attach(Role::where('slug', 'admin')->first());
+>>> exit
+
+# Obter token JWT
+curl -X POST http://localhost:8000/api/v1/auth/login \
+  -H "Content-Type: application/vnd.api+json" \
+  -d '{"email":"admin@gescal.gov.br","password":"password"}'
+```
+
+---
+
+## 🏗️ Stack Tecnológica
 
 ### Backend (API)
 
-- **Laravel 12.x**
-- API **stateless** seguindo convenções **JSON:API**:
-  - `type`, `id`, `attributes`, `relationships`
-  - Respostas JSON padronizadas para facilitar o consumo por SPAs e outros clientes
-- **MySQL** / MariaDB como banco relacional
-- **Redis** para:
-  - Fila de jobs (`jobs`, `job_batches`, `failed_jobs` podem ser usados conforme configuração)
-  - Cache de aplicação (opcional)
-- Autenticação baseada no modelo `User` padrão do Laravel (podendo evoluir para Sanctum / JWT conforme necessidade)
+- **Laravel 12.x** - Framework PHP moderno
+- **PHP 8.4** - Última versão estável
+- **JSON:API 1.1** - Especificação REST completa
+- **JWT Auth** - Autenticação stateless com tymon/jwt-auth
+- **MySQL 8.0** - Banco de dados relacional
+- **Redis 7** - Cache e filas
+- **Laravel Horizon** - Monitor de filas
+- **Laravel Telescope** - Debug e monitoramento
+- **Mailhog** - Teste de emails (desenvolvimento)
 
-### Frontend
+### Infraestrutura
+
+- **Docker** - Containerização
+- **Nginx + PHP-FPM** - Web server
+- **Supervisor** - Gerenciamento de processos
+- **Laravel Pint** - Code formatting (PSR-12)
+- **PHPUnit** - Testes automatizados
+- **Larastan** - Análise estática (PHPStan)
+
+### Frontend (Separado)
 
 - **Vue 3** (Composition API)
-- **Pinia** para gerenciamento de estado
-- SPA rodando em **origem distinta** da API (CORS habilitado na API)
-- Comunicação exclusivamente via JSON:API
+- **Pinia** - Gerenciamento de estado
+- **Comunicação via JSON:API**
+
+---
+
+## 📚 API Documentation
+
+### Autenticação
+
+Todas as requisições (exceto `/auth/login` e dados de referência) requerem autenticação JWT.
+
+```bash
+# Login
+POST /api/v1/auth/login
+Content-Type: application/vnd.api+json
+
+{
+  "email": "user@example.com",
+  "password": "password"
+}
+
+# Response
+{
+  "access_token": "eyJ0eXAiOiJKV1QiLCJhb...",
+  "token_type": "bearer",
+  "expires_in": 3600,
+  "roles": ["coordinator"]
+}
+
+# Use o token nas requisições
+Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhb...
+```
+
+### Principais Endpoints
+
+#### Pessoas (Persons)
+- `GET /api/v1/persons` - Listar pessoas (com filtros, paginação)
+- `GET /api/v1/persons/{id}` - Obter pessoa específica
+- `POST /api/v1/persons` - Criar pessoa
+- `PATCH /api/v1/persons/{id}` - Atualizar pessoa
+- `DELETE /api/v1/persons/{id}` - Soft delete pessoa
+- `GET /api/v1/persons/{id}/data-export` - Exportar dados (LGPD Art. 18)
+
+#### Famílias (Families)
+- `GET /api/v1/families` - Listar famílias
+- `GET /api/v1/families/{id}` - Obter família específica
+- `POST /api/v1/families` - Criar família
+- `PATCH /api/v1/families/{id}` - Atualizar família
+- `DELETE /api/v1/families/{id}` - Soft delete família
+
+#### Casos (Cases)
+- `GET /api/v1/cases` - Listar casos de atendimento
+- `GET /api/v1/cases/{id}` - Obter caso específico
+- `POST /api/v1/cases` - Criar caso
+
+#### Benefícios (Benefits)
+- `GET /api/v1/benefits` - Listar benefícios
+- `GET /api/v1/benefits/{id}` - Obter benefício específico
+- `POST /api/v1/benefits` - Criar benefício
+
+#### Dados de Referência (Público)
+- `GET /api/v1/reference-data/federation-units` - UFs brasileiras
+- `GET /api/v1/reference-data/race-ethnicities` - Raças/Etnias
+- `GET /api/v1/reference-data/marital-statuses` - Estados civis
+- `GET /api/v1/reference-data/benefit-programs` - Programas de benefícios
+
+#### Operações em Massa (Coordinator/Admin)
+- `POST /api/v1/bulk/import` - Importar múltiplos recursos
+- `POST /api/v1/bulk/export` - Exportar múltiplos recursos
+
+### Exemplos de Uso
+
+#### Criar uma Pessoa
+
+```bash
+POST /api/v1/persons
+Authorization: Bearer {token}
+Content-Type: application/vnd.api+json
+Accept: application/vnd.api+json
+
+{
+  "data": {
+    "type": "persons",
+    "attributes": {
+      "full_name": "João da Silva",
+      "sex": "Masculino",
+      "birth_date": "1985-03-15",
+      "nationality": "brasileiro",
+      "natural_city": "São Paulo",
+      "primary_phone": "(11) 98765-4321",
+      "email": "joao.silva@example.com"
+    },
+    "relationships": {
+      "naturalFederationUnit": {
+        "data": { "type": "federation-units", "id": "1" }
+      },
+      "raceEthnicity": {
+        "data": { "type": "race-ethnicities", "id": "1" }
+      },
+      "maritalStatus": {
+        "data": { "type": "marital-statuses", "id": "1" }
+      },
+      "schoolingLevel": {
+        "data": { "type": "schooling-levels", "id": "1" }
+      }
+    }
+  }
+}
+```
+
+#### Listar Pessoas com Filtros
+
+```bash
+GET /api/v1/persons?filter[full_name]=Silva&sort=-created_at&page[number]=1&page[size]=25&include=documents,families
+Authorization: Bearer {token}
+Accept: application/vnd.api+json
+```
+
+#### Exportação em Massa
+
+```bash
+POST /api/v1/bulk/export
+Authorization: Bearer {token}
+Content-Type: application/vnd.api+json
+
+{
+  "types": ["people", "families"],
+  "filters": {
+    "created_since": "2025-01-01"
+  }
+}
+```
+
+### Versionamento da API
+
+A API suporta versionamento via URL:
+
+- **V1 (Atual)**: `/api/v1/*` - Versão estável e ativa
+- **V2 (Futuro)**: `/api/v2/*` - Planejada para futuras melhorias
+
+Headers de versão:
+```
+X-API-Version: 1.0
+X-API-Deprecated: false
+```
+
+Para mais detalhes, consulte: [`docs/api-versioning.md`](docs/api-versioning.md)
+
+### Especificação OpenAPI
+
+A especificação completa está disponível em:
+- **Arquivo**: `specs/002-jsonapi-rest-api/contracts/openapi.yaml`
+- **Swagger UI**: `http://localhost:8000/api/documentation` (quando configurado)
 
 ---
 

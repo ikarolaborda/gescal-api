@@ -14,12 +14,12 @@ return new class extends Migration
         Schema::create('race_ethnicities', function (Blueprint $table) {
             $table->id();
             $table->enum('race_color', [
-                'branca', 
-                'preta', 
-                'parda', 
-                'amarela', 
+                'branca',
+                'preta',
+                'parda',
+                'amarela',
                 'indigena',
-                'nao_declarada'
+                'nao_declarada',
             ]);
             $table->timestamps();
         });

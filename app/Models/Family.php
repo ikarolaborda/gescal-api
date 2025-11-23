@@ -2,10 +2,18 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\HasSoftDeletes;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
-class Famlily extends Model
+class Family extends Model
 {
+    use HasFactory, HasSoftDeletes;
+
+    protected $table = 'families';
+
     protected $guarded = [];
 
     protected function casts(): array
@@ -13,6 +21,14 @@ class Famlily extends Model
         return [
             'family_income_value' => 'decimal:2',
         ];
+    }
+
+    /**
+     * Create a new factory instance for the model.
+     */
+    protected static function newFactory(): \Database\Factories\FamilyFactory
+    {
+        return \Database\Factories\FamilyFactory::new();
     }
 
     public function responsible(): BelongsTo

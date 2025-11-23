@@ -1,0 +1,73 @@
+<?php
+
+use App\Http\Controllers\Api\V1\Auth\LoginController;
+use App\Http\Controllers\Api\V1\Auth\LogoutController;
+use App\Http\Controllers\Api\V1\Auth\MeController;
+use App\Http\Controllers\Api\V1\Auth\RefreshController;
+use Illuminate\Support\Facades\Route;
+
+/*
+|--------------------------------------------------------------------------
+| API Routes
+|--------------------------------------------------------------------------
+|
+| Here is where you can register API routes for your application. These
+| routes are loaded by the RouteServiceProvider and all of them will
+| be assigned to the "api" middleware group. Make something great!
+|
+*/
+
+// API Version 1
+Route::prefix('v1')->group(function (): void {
+    // Authentication routes (public, no JWT required)
+    Route::prefix('auth')->group(function (): void {
+        Route::post('login', LoginController::class)->name('api.v1.auth.login');
+
+        // Protected routes (JWT required)
+        Route::middleware('jwt.auth')->group(function (): void {
+            Route::post('refresh', RefreshController::class)->name('api.v1.auth.refresh');
+            Route::post('logout', LogoutController::class)->name('api.v1.auth.logout');
+            Route::get('me', MeController::class)->name('api.v1.auth.me');
+        });
+    });
+
+    // Public Reference Data routes (no auth required, cached)
+    Route::prefix('reference-data')->group(function (): void {
+        Route::get('federation-units', \App\Http\Controllers\Api\V1\ReferenceData\FederationUnitsController::class)->name('api.v1.reference-data.federation-units');
+        Route::get('race-ethnicities', \App\Http\Controllers\Api\V1\ReferenceData\RaceEthnicitiesController::class)->name('api.v1.reference-data.race-ethnicities');
+        Route::get('marital-statuses', \App\Http\Controllers\Api\V1\ReferenceData\MaritalStatusesController::class)->name('api.v1.reference-data.marital-statuses');
+        Route::get('benefit-programs', \App\Http\Controllers\Api\V1\ReferenceData\BenefitProgramsController::class)->name('api.v1.reference-data.benefit-programs');
+    });
+
+    // Protected API routes (JWT + JSON:API headers)
+    Route::middleware(['jwt.auth', 'jsonapi.headers'])->group(function (): void {
+        // Cases
+        Route::get('cases', \App\Http\Controllers\Api\V1\Cases\IndexController::class)->name('api.v1.cases.index');
+        Route::get('cases/{id}', \App\Http\Controllers\Api\V1\Cases\ShowController::class)->name('api.v1.cases.show');
+        Route::post('cases', \App\Http\Controllers\Api\V1\Cases\StoreController::class)->name('api.v1.cases.store');
+
+        // Families
+        Route::get('families', \App\Http\Controllers\Api\V1\Families\IndexController::class)->name('api.v1.families.index');
+        Route::get('families/{id}', \App\Http\Controllers\Api\V1\Families\ShowController::class)->name('api.v1.families.show');
+        Route::post('families', \App\Http\Controllers\Api\V1\Families\StoreController::class)->name('api.v1.families.store');
+        Route::patch('families/{id}', \App\Http\Controllers\Api\V1\Families\UpdateController::class)->name('api.v1.families.update');
+        Route::delete('families/{id}', \App\Http\Controllers\Api\V1\Families\DestroyController::class)->name('api.v1.families.destroy');
+
+        // Benefits
+        Route::get('benefits', \App\Http\Controllers\Api\V1\Benefits\IndexController::class)->name('api.v1.benefits.index');
+        Route::get('benefits/{id}', \App\Http\Controllers\Api\V1\Benefits\ShowController::class)->name('api.v1.benefits.show');
+        Route::post('benefits', \App\Http\Controllers\Api\V1\Benefits\StoreController::class)->name('api.v1.benefits.store');
+
+        // Persons
+        Route::get('persons', \App\Http\Controllers\Api\V1\People\IndexController::class)->name('api.v1.persons.index');
+        Route::get('persons/{id}', \App\Http\Controllers\Api\V1\People\ShowController::class)->name('api.v1.persons.show');
+        Route::post('persons', \App\Http\Controllers\Api\V1\People\StoreController::class)->name('api.v1.persons.store');
+        Route::patch('persons/{id}', \App\Http\Controllers\Api\V1\People\UpdateController::class)->name('api.v1.persons.update');
+        Route::delete('persons/{id}', \App\Http\Controllers\Api\V1\People\DestroyController::class)->name('api.v1.persons.destroy');
+        Route::get('persons/{id}/data-export', \App\Http\Controllers\Api\V1\People\DataExportController::class)->name('api.v1.persons.data-export');
+
+        // Bulk Operations
+        Route::post('bulk/import', \App\Http\Controllers\Api\V1\Bulk\ImportController::class)->name('api.v1.bulk.import');
+        Route::post('bulk/export', \App\Http\Controllers\Api\V1\Bulk\ExportController::class)->name('api.v1.bulk.export');
+    });
+});

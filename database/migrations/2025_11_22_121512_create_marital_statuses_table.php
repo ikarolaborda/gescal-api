@@ -19,7 +19,7 @@ return new class extends Migration
                 'divorciado',
                 'viuvo',
                 'união_estável',
-                'nao_declarado'
+                'nao_declarado',
             ]);
             $table->timestamps();
         });

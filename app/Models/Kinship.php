@@ -33,7 +33,7 @@ class Kinship extends Model
             Family::class,
             'family_person',
             'kinship_id',
-            'family_id'         
+            'family_id'
         )->withPivot(['person_id', 'is_responsible', 'lives_in_household']);
     }
 
@@ -46,7 +46,7 @@ class Kinship extends Model
             Person::class,
             'family_person',
             'kinship_id',
-            'person_id'         
+            'person_id'
         )->withPivot(['family_id', 'is_responsible', 'lives_in_household']);
     }
-}   
+}

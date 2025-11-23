@@ -11,8 +11,8 @@ class HousingUnit extends Model
     protected function casts(): array
     {
         return [
-            'room_count'                 => 'integer',
-            'rent_or_financing_value'    => 'decimal:2',
+            'room_count' => 'integer',
+            'rent_or_financing_value' => 'decimal:2',
             'participates_housing_program' => 'boolean',
             'length_of_residence_months' => 'integer',
         ];

@@ -2,19 +2,27 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\HasSoftDeletes;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class Benefit extends Model
 {
+    use HasFactory;
+
+    use HasSoftDeletes;
+
     protected $guarded = [];
 
     protected function casts(): array
     {
         return [
-            'value'      => 'decimal:2',
-            'is_active'  => 'boolean',
+            'value' => 'decimal:2',
+            'is_active' => 'boolean',
             'started_at' => 'date:Y-m-d',
-            'ended_at'   => 'date:Y-m-d',
+            'ended_at' => 'date:Y-m-d',
         ];
     }
 

@@ -1,0 +1,1284 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "GESCAL API - Sistema de Gestão Social e Calamidades",
+    "description": "JSON:API compliant REST API for social assistance and disaster management in Brazil.\n\n## Overview\n\nGESCAL is a comprehensive platform for managing social assistance programs and disaster relief operations. The API provides endpoints for managing persons, families, cases, benefits, and reference data.\n\n## Authentication\n\nMost endpoints require JWT authentication. To authenticate:\n\n1. Call `POST /api/v1/auth/login` with email and password\n2. Receive a JWT token in the response\n3. Include the token in subsequent requests: `Authorization: Bearer {token}`\n\n## JSON:API Compliance\n\nAll requests must include these headers:\n- `Content-Type: application/vnd.api+json`\n- `Accept: application/vnd.api+json`\n\n## Data Privacy (LGPD)\n\nThe API implements Brazilian LGPD (Lei Geral de Proteção de Dados) compliance:\n- PII is masked based on user roles\n- Audit logging for all sensitive operations\n- Data export functionality (Article 18)\n- Soft deletes with configurable retention\n\n## Rate Limiting\n\nAPI requests are rate-limited:\n- 60 requests per minute for authenticated users\n- 30 requests per minute for public endpoints",
+    "version": "1.0.0",
+    "contact": {
+      "name": "GESCAL API Support",
+      "email": "support@gescal.gov.br"
+    },
+    "license": {
+      "name": "Proprietary"
+    }
+  },
+  "servers": [
+    {
+      "url": "http://localhost:8000/api/v1",
+      "description": "Local Development (V1)"
+    },
+    {
+      "url": "https://api.gescal.gov.br/v1",
+      "description": "Production (V1)"
+    }
+  ],
+  "tags": [
+    {
+      "name": "Authentication",
+      "description": "JWT-based authentication endpoints"
+    },
+    {
+      "name": "Persons",
+      "description": "Person (Pessoa) resource management - individual beneficiaries"
+    },
+    {
+      "name": "Families",
+      "description": "Family (Família) resource management - family units"
+    },
+    {
+      "name": "Cases",
+      "description": "Case (Caso) resource management - social assistance cases"
+    },
+    {
+      "name": "Benefits",
+      "description": "Benefit (Benefício) resource management - granted benefits"
+    },
+    {
+      "name": "Reference Data",
+      "description": "Public reference data endpoints (cached, no auth required)"
+    },
+    {
+      "name": "Bulk Operations",
+      "description": "Bulk import/export operations (Admin/Coordinator only)"
+    },
+    {
+      "name": "LGPD",
+      "description": "Data privacy and export endpoints"
+    }
+  ],
+  "paths": {
+    "/auth/login": {
+      "post": {
+        "tags": ["Authentication"],
+        "summary": "Authenticate user",
+        "description": "Authenticate a user with email and password, receive a JWT token",
+        "operationId": "login",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["email", "password"],
+                "properties": {
+                  "email": {
+                    "type": "string",
+                    "format": "email",
+                    "example": "admin@gescal.gov.br"
+                  },
+                  "password": {
+                    "type": "string",
+                    "format": "password",
+                    "example": "password123"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful authentication",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "access_token": {
+                      "type": "string",
+                      "example": "eyJ0eXAiOiJKV1QiLCJhbGc..."
+                    },
+                    "token_type": {
+                      "type": "string",
+                      "example": "bearer"
+                    },
+                    "expires_in": {
+                      "type": "integer",
+                      "example": 3600
+                    },
+                    "roles": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      },
+                      "example": ["social_worker"]
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationError"
+          }
+        }
+      }
+    },
+    "/auth/refresh": {
+      "post": {
+        "tags": ["Authentication"],
+        "summary": "Refresh JWT token",
+        "description": "Refresh an existing JWT token to extend the session",
+        "operationId": "refresh",
+        "security": [{"bearerAuth": []}],
+        "responses": {
+          "200": {
+            "description": "Token refreshed successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "access_token": {
+                      "type": "string"
+                    },
+                    "token_type": {
+                      "type": "string",
+                      "example": "bearer"
+                    },
+                    "expires_in": {
+                      "type": "integer",
+                      "example": 3600
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          }
+        }
+      }
+    },
+    "/auth/logout": {
+      "post": {
+        "tags": ["Authentication"],
+        "summary": "Logout user",
+        "description": "Invalidate the current JWT token",
+        "operationId": "logout",
+        "security": [{"bearerAuth": []}],
+        "responses": {
+          "200": {
+            "description": "Logged out successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Successfully logged out"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          }
+        }
+      }
+    },
+    "/auth/me": {
+      "get": {
+        "tags": ["Authentication"],
+        "summary": "Get current user",
+        "description": "Retrieve the authenticated user's information",
+        "operationId": "me",
+        "security": [{"bearerAuth": []}],
+        "responses": {
+          "200": {
+            "description": "Current user information",
+            "content": {
+              "application/vnd.api+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserResource"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          }
+        }
+      }
+    },
+    "/persons": {
+      "get": {
+        "tags": ["Persons"],
+        "summary": "List persons",
+        "description": "Retrieve a paginated list of persons with filtering, sorting, and include options",
+        "operationId": "listPersons",
+        "security": [{"bearerAuth": []}],
+        "parameters": [
+          {"$ref": "#/components/parameters/PageNumber"},
+          {"$ref": "#/components/parameters/PageSize"},
+          {
+            "name": "filter[full_name]",
+            "in": "query",
+            "description": "Filter by person's full name (partial match)",
+            "schema": {"type": "string"}
+          },
+          {
+            "name": "filter[sex]",
+            "in": "query",
+            "description": "Filter by sex",
+            "schema": {
+              "type": "string",
+              "enum": ["Masculino", "Feminino"]
+            }
+          },
+          {
+            "name": "sort",
+            "in": "query",
+            "description": "Sort results (prefix with - for descending)",
+            "schema": {
+              "type": "string",
+              "example": "-created_at"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of persons",
+            "content": {
+              "application/vnd.api+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PersonCollection"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          }
+        }
+      },
+      "post": {
+        "tags": ["Persons"],
+        "summary": "Create person",
+        "description": "Create a new person record",
+        "operationId": "createPerson",
+        "security": [{"bearerAuth": []}],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/vnd.api+json": {
+              "schema": {
+                "$ref": "#/components/schemas/PersonCreateRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Person created successfully",
+            "content": {
+              "application/vnd.api+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PersonResource"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationError"
+          }
+        }
+      }
+    },
+    "/persons/{id}": {
+      "get": {
+        "tags": ["Persons"],
+        "summary": "Get person",
+        "description": "Retrieve a specific person by ID",
+        "operationId": "getPerson",
+        "security": [{"bearerAuth": []}],
+        "parameters": [
+          {"$ref": "#/components/parameters/ResourceId"}
+        ],
+        "responses": {
+          "200": {
+            "description": "Person details",
+            "content": {
+              "application/vnd.api+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PersonResource"
+                }
+              }
+            }
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          }
+        }
+      },
+      "patch": {
+        "tags": ["Persons"],
+        "summary": "Update person",
+        "description": "Update an existing person record",
+        "operationId": "updatePerson",
+        "security": [{"bearerAuth": []}],
+        "parameters": [
+          {"$ref": "#/components/parameters/ResourceId"}
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/vnd.api+json": {
+              "schema": {
+                "$ref": "#/components/schemas/PersonUpdateRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Person updated successfully",
+            "content": {
+              "application/vnd.api+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PersonResource"
+                }
+              }
+            }
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationError"
+          }
+        }
+      },
+      "delete": {
+        "tags": ["Persons"],
+        "summary": "Delete person (soft delete)",
+        "description": "Soft delete a person record. The record is marked as deleted but retained for LGPD compliance.",
+        "operationId": "deletePerson",
+        "security": [{"bearerAuth": []}],
+        "parameters": [
+          {"$ref": "#/components/parameters/ResourceId"}
+        ],
+        "responses": {
+          "204": {
+            "description": "Person deleted successfully"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          }
+        }
+      }
+    },
+    "/persons/{id}/data-export": {
+      "get": {
+        "tags": ["LGPD", "Persons"],
+        "summary": "Export person data (LGPD Article 18)",
+        "description": "Export all data related to a person for LGPD compliance (right to access)",
+        "operationId": "exportPersonData",
+        "security": [{"bearerAuth": []}],
+        "parameters": [
+          {"$ref": "#/components/parameters/ResourceId"}
+        ],
+        "responses": {
+          "200": {
+            "description": "Person data export",
+            "content": {
+              "application/vnd.api+json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "type": {
+                          "type": "string",
+                          "example": "person-data-export"
+                        },
+                        "id": {
+                          "type": "string"
+                        },
+                        "attributes": {
+                          "type": "object",
+                          "properties": {
+                            "person": {"type": "object"},
+                            "family_memberships": {"type": "array", "items": {"type": "object"}},
+                            "benefits": {"type": "array", "items": {"type": "object"}},
+                            "cases": {"type": "array", "items": {"type": "object"}},
+                            "documents": {"type": "array", "items": {"type": "object"}},
+                            "audit_logs": {"type": "array", "items": {"type": "object"}},
+                            "meta": {
+                              "type": "object",
+                              "properties": {
+                                "exported_at": {"type": "string", "format": "date-time"},
+                                "lgpd_article": {"type": "string", "example": "Article 18 - Right to Access"}
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          }
+        }
+      }
+    },
+    "/families": {
+      "get": {
+        "tags": ["Families"],
+        "summary": "List families",
+        "description": "Retrieve a paginated list of families",
+        "operationId": "listFamilies",
+        "security": [{"bearerAuth": []}],
+        "parameters": [
+          {"$ref": "#/components/parameters/PageNumber"},
+          {"$ref": "#/components/parameters/PageSize"},
+          {
+            "name": "sort",
+            "in": "query",
+            "schema": {"type": "string", "example": "-created_at"}
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of families",
+            "content": {
+              "application/vnd.api+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FamilyCollection"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": ["Families"],
+        "summary": "Create family",
+        "description": "Create a new family record",
+        "operationId": "createFamily",
+        "security": [{"bearerAuth": []}],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/vnd.api+json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "data": {
+                    "type": "object",
+                    "required": ["type", "attributes"],
+                    "properties": {
+                      "type": {"type": "string", "example": "families"},
+                      "attributes": {
+                        "type": "object",
+                        "required": ["responsible_person_id", "address_id"],
+                        "properties": {
+                          "responsible_person_id": {"type": "integer"},
+                          "address_id": {"type": "integer"},
+                          "origin_city": {"type": "string"},
+                          "origin_federation_unit_id": {"type": "integer"},
+                          "family_income_bracket": {"type": "string"},
+                          "family_income_value": {"type": "number", "format": "decimal"}
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Family created",
+            "content": {
+              "application/vnd.api+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FamilyResource"
+                }
+              }
+            }
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationError"
+          }
+        }
+      }
+    },
+    "/families/{id}": {
+      "get": {
+        "tags": ["Families"],
+        "summary": "Get family",
+        "operationId": "getFamily",
+        "security": [{"bearerAuth": []}],
+        "parameters": [{"$ref": "#/components/parameters/ResourceId"}],
+        "responses": {
+          "200": {
+            "description": "Family details",
+            "content": {
+              "application/vnd.api+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FamilyResource"
+                }
+              }
+            }
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          }
+        }
+      },
+      "patch": {
+        "tags": ["Families"],
+        "summary": "Update family",
+        "operationId": "updateFamily",
+        "security": [{"bearerAuth": []}],
+        "parameters": [{"$ref": "#/components/parameters/ResourceId"}],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/vnd.api+json": {
+              "schema": {
+                "type": "object"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Family updated"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          }
+        }
+      },
+      "delete": {
+        "tags": ["Families"],
+        "summary": "Delete family",
+        "operationId": "deleteFamily",
+        "security": [{"bearerAuth": []}],
+        "parameters": [{"$ref": "#/components/parameters/ResourceId"}],
+        "responses": {
+          "204": {
+            "description": "Family deleted"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          }
+        }
+      }
+    },
+    "/cases": {
+      "get": {
+        "tags": ["Cases"],
+        "summary": "List cases",
+        "operationId": "listCases",
+        "security": [{"bearerAuth": []}],
+        "parameters": [
+          {"$ref": "#/components/parameters/PageNumber"},
+          {"$ref": "#/components/parameters/PageSize"}
+        ],
+        "responses": {
+          "200": {
+            "description": "List of cases",
+            "content": {
+              "application/vnd.api+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CaseCollection"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": ["Cases"],
+        "summary": "Create case",
+        "operationId": "createCase",
+        "security": [{"bearerAuth": []}],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/vnd.api+json": {
+              "schema": {
+                "type": "object"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Case created"
+          }
+        }
+      }
+    },
+    "/cases/{id}": {
+      "get": {
+        "tags": ["Cases"],
+        "summary": "Get case",
+        "operationId": "getCase",
+        "security": [{"bearerAuth": []}],
+        "parameters": [{"$ref": "#/components/parameters/ResourceId"}],
+        "responses": {
+          "200": {
+            "description": "Case details"
+          }
+        }
+      }
+    },
+    "/benefits": {
+      "get": {
+        "tags": ["Benefits"],
+        "summary": "List benefits",
+        "operationId": "listBenefits",
+        "security": [{"bearerAuth": []}],
+        "parameters": [
+          {"$ref": "#/components/parameters/PageNumber"},
+          {"$ref": "#/components/parameters/PageSize"}
+        ],
+        "responses": {
+          "200": {
+            "description": "List of benefits"
+          }
+        }
+      },
+      "post": {
+        "tags": ["Benefits"],
+        "summary": "Create benefit",
+        "operationId": "createBenefit",
+        "security": [{"bearerAuth": []}],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/vnd.api+json": {
+              "schema": {
+                "type": "object"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Benefit created"
+          }
+        }
+      }
+    },
+    "/benefits/{id}": {
+      "get": {
+        "tags": ["Benefits"],
+        "summary": "Get benefit",
+        "operationId": "getBenefit",
+        "security": [{"bearerAuth": []}],
+        "parameters": [{"$ref": "#/components/parameters/ResourceId"}],
+        "responses": {
+          "200": {
+            "description": "Benefit details"
+          }
+        }
+      }
+    },
+    "/reference-data/federation-units": {
+      "get": {
+        "tags": ["Reference Data"],
+        "summary": "List federation units",
+        "description": "Get all Brazilian states (UFs). This endpoint is public and cached.",
+        "operationId": "listFederationUnits",
+        "responses": {
+          "200": {
+            "description": "List of federation units",
+            "headers": {
+              "ETag": {
+                "schema": {"type": "string"},
+                "description": "Entity tag for caching"
+              },
+              "Cache-Control": {
+                "schema": {"type": "string"},
+                "description": "Cache control directives"
+              }
+            },
+            "content": {
+              "application/vnd.api+json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "type": {"type": "string", "example": "federation-units"},
+                          "id": {"type": "string"},
+                          "attributes": {
+                            "type": "object",
+                            "properties": {
+                              "federation_unit": {
+                                "type": "string",
+                                "enum": ["AC", "AL", "AP", "AM", "BA", "CE", "DF", "ES", "GO", "MA", "MT", "MS", "MG", "PA", "PB", "PE", "PI", "PR", "RJ", "RN", "RO", "RR", "RS", "SC", "SE", "SP", "TO", "nao_declarado"]
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "304": {
+            "description": "Not modified (cached)"
+          }
+        }
+      }
+    },
+    "/reference-data/race-ethnicities": {
+      "get": {
+        "tags": ["Reference Data"],
+        "summary": "List race/ethnicities",
+        "description": "Get all race/ethnicity options (Brazilian IBGE classification)",
+        "operationId": "listRaceEthnicities",
+        "responses": {
+          "200": {
+            "description": "List of race/ethnicities"
+          }
+        }
+      }
+    },
+    "/reference-data/marital-statuses": {
+      "get": {
+        "tags": ["Reference Data"],
+        "summary": "List marital statuses",
+        "operationId": "listMaritalStatuses",
+        "responses": {
+          "200": {
+            "description": "List of marital statuses"
+          }
+        }
+      }
+    },
+    "/reference-data/benefit-programs": {
+      "get": {
+        "tags": ["Reference Data"],
+        "summary": "List benefit programs",
+        "operationId": "listBenefitPrograms",
+        "responses": {
+          "200": {
+            "description": "List of available benefit programs"
+          }
+        }
+      }
+    },
+    "/bulk/import": {
+      "post": {
+        "tags": ["Bulk Operations"],
+        "summary": "Bulk import",
+        "description": "Import multiple resources in batch (max 1000 per type). Requires coordinator or admin role.",
+        "operationId": "bulkImport",
+        "security": [{"bearerAuth": []}],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/vnd.api+json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "data": {
+                    "type": "object",
+                    "properties": {
+                      "persons": {
+                        "type": "array",
+                        "maxItems": 1000,
+                        "items": {"type": "object"}
+                      },
+                      "families": {
+                        "type": "array",
+                        "maxItems": 1000,
+                        "items": {"type": "object"}
+                      },
+                      "cases": {
+                        "type": "array",
+                        "maxItems": 1000,
+                        "items": {"type": "object"}
+                      },
+                      "benefits": {
+                        "type": "array",
+                        "maxItems": 1000,
+                        "items": {"type": "object"}
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Import completed",
+            "content": {
+              "application/vnd.api+json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "type": {"type": "string", "example": "bulk-import-results"},
+                        "attributes": {
+                          "type": "object",
+                          "properties": {
+                            "success": {"type": "boolean"},
+                            "results": {
+                              "type": "object",
+                              "additionalProperties": {
+                                "type": "object",
+                                "properties": {
+                                  "successful": {"type": "integer"},
+                                  "failed": {"type": "integer"},
+                                  "errors": {"type": "array", "items": {"type": "object"}}
+                                }
+                              }
+                            },
+                            "timestamp": {"type": "string", "format": "date-time"}
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationError"
+          }
+        }
+      }
+    },
+    "/bulk/export": {
+      "post": {
+        "tags": ["Bulk Operations"],
+        "summary": "Bulk export",
+        "description": "Export multiple resources in batch with optional filters. Requires coordinator or admin role.",
+        "operationId": "bulkExport",
+        "security": [{"bearerAuth": []}],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/vnd.api+json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "types": {
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "enum": ["persons", "families", "cases", "benefits"]
+                    }
+                  },
+                  "filters": {
+                    "type": "object",
+                    "properties": {
+                      "created_since": {"type": "string", "format": "date"},
+                      "updated_since": {"type": "string", "format": "date"}
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Export completed",
+            "content": {
+              "application/vnd.api+json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "object",
+                      "additionalProperties": {
+                        "type": "object",
+                        "properties": {
+                          "data": {
+                            "type": "array",
+                            "items": {"type": "object"}
+                          }
+                        }
+                      }
+                    },
+                    "meta": {
+                      "type": "object",
+                      "properties": {
+                        "exported_at": {"type": "string", "format": "date-time"},
+                        "total_records": {"type": "integer"}
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT",
+        "description": "JWT token obtained from /auth/login endpoint. Include in Authorization header as: Bearer {token}"
+      }
+    },
+    "parameters": {
+      "ResourceId": {
+        "name": "id",
+        "in": "path",
+        "required": true,
+        "description": "Resource ID",
+        "schema": {
+          "type": "integer",
+          "minimum": 1
+        }
+      },
+      "PageNumber": {
+        "name": "page[number]",
+        "in": "query",
+        "description": "Page number for pagination",
+        "schema": {
+          "type": "integer",
+          "minimum": 1,
+          "default": 1
+        }
+      },
+      "PageSize": {
+        "name": "page[size]",
+        "in": "query",
+        "description": "Number of items per page",
+        "schema": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 100,
+          "default": 25
+        }
+      }
+    },
+    "schemas": {
+      "UserResource": {
+        "type": "object",
+        "properties": {
+          "type": {"type": "string", "example": "users"},
+          "id": {"type": "string"},
+          "attributes": {
+            "type": "object",
+            "properties": {
+              "name": {"type": "string"},
+              "email": {"type": "string", "format": "email"},
+              "roles": {
+                "type": "array",
+                "items": {"type": "string"}
+              }
+            }
+          }
+        }
+      },
+      "PersonResource": {
+        "type": "object",
+        "properties": {
+          "type": {"type": "string", "example": "persons"},
+          "id": {"type": "string"},
+          "attributes": {
+            "type": "object",
+            "properties": {
+              "full_name": {"type": "string"},
+              "sex": {"type": "string", "enum": ["Masculino", "Feminino"]},
+              "birth_date": {"type": "string", "format": "date"},
+              "cpf": {"type": "string", "nullable": true},
+              "rg": {"type": "string", "nullable": true},
+              "natural_federation_unit_id": {"type": "integer"},
+              "primary_phone": {"type": "string"},
+              "secondary_phone": {"type": "string", "nullable": true},
+              "email": {"type": "string", "format": "email", "nullable": true},
+              "schooling_level_id": {"type": "integer", "nullable": true},
+              "race_ethnicity_id": {"type": "integer", "nullable": true},
+              "marital_status_id": {"type": "integer", "nullable": true},
+              "created_at": {"type": "string", "format": "date-time"},
+              "updated_at": {"type": "string", "format": "date-time"}
+            }
+          },
+          "relationships": {
+            "type": "object",
+            "properties": {
+              "naturalFederationUnit": {"type": "object"},
+              "schoolingLevel": {"type": "object"},
+              "raceEthnicity": {"type": "object"},
+              "maritalStatus": {"type": "object"}
+            }
+          },
+          "links": {
+            "type": "object",
+            "properties": {
+              "self": {"type": "string", "format": "uri"}
+            }
+          }
+        }
+      },
+      "PersonCollection": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "array",
+            "items": {"$ref": "#/components/schemas/PersonResource"}
+          },
+          "links": {
+            "type": "object",
+            "properties": {
+              "first": {"type": "string", "format": "uri"},
+              "last": {"type": "string", "format": "uri"},
+              "prev": {"type": "string", "format": "uri", "nullable": true},
+              "next": {"type": "string", "format": "uri", "nullable": true}
+            }
+          },
+          "meta": {
+            "type": "object",
+            "properties": {
+              "current_page": {"type": "integer"},
+              "from": {"type": "integer"},
+              "last_page": {"type": "integer"},
+              "path": {"type": "string"},
+              "per_page": {"type": "integer"},
+              "to": {"type": "integer"},
+              "total": {"type": "integer"}
+            }
+          }
+        }
+      },
+      "PersonCreateRequest": {
+        "type": "object",
+        "required": ["data"],
+        "properties": {
+          "data": {
+            "type": "object",
+            "required": ["type", "attributes"],
+            "properties": {
+              "type": {
+                "type": "string",
+                "example": "persons"
+              },
+              "attributes": {
+                "type": "object",
+                "required": ["full_name", "sex", "birth_date", "natural_federation_unit_id", "primary_phone"],
+                "properties": {
+                  "full_name": {"type": "string", "example": "João da Silva"},
+                  "sex": {"type": "string", "enum": ["Masculino", "Feminino"]},
+                  "birth_date": {"type": "string", "format": "date", "example": "1985-03-15"},
+                  "cpf": {"type": "string", "example": "123.456.789-00"},
+                  "rg": {"type": "string"},
+                  "natural_federation_unit_id": {"type": "integer"},
+                  "primary_phone": {"type": "string", "example": "+55 11 98765-4321"},
+                  "secondary_phone": {"type": "string"},
+                  "email": {"type": "string", "format": "email"},
+                  "schooling_level_id": {"type": "integer"},
+                  "race_ethnicity_id": {"type": "integer"},
+                  "marital_status_id": {"type": "integer"}
+                }
+              }
+            }
+          }
+        }
+      },
+      "PersonUpdateRequest": {
+        "type": "object",
+        "required": ["data"],
+        "properties": {
+          "data": {
+            "type": "object",
+            "required": ["type", "id", "attributes"],
+            "properties": {
+              "type": {"type": "string", "example": "persons"},
+              "id": {"type": "string"},
+              "attributes": {
+                "type": "object",
+                "properties": {
+                  "full_name": {"type": "string"},
+                  "sex": {"type": "string", "enum": ["Masculino", "Feminino"]},
+                  "birth_date": {"type": "string", "format": "date"},
+                  "primary_phone": {"type": "string"},
+                  "email": {"type": "string", "format": "email"}
+                }
+              }
+            }
+          }
+        }
+      },
+      "FamilyResource": {
+        "type": "object",
+        "properties": {
+          "type": {"type": "string", "example": "families"},
+          "id": {"type": "string"},
+          "attributes": {
+            "type": "object",
+            "properties": {
+              "responsible_person_id": {"type": "integer"},
+              "address_id": {"type": "integer"},
+              "origin_city": {"type": "string"},
+              "origin_federation_unit_id": {"type": "integer"},
+              "family_income_bracket": {"type": "string"},
+              "family_income_value": {"type": "number", "format": "decimal"}
+            }
+          }
+        }
+      },
+      "FamilyCollection": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "array",
+            "items": {"$ref": "#/components/schemas/FamilyResource"}
+          },
+          "links": {"type": "object"},
+          "meta": {"type": "object"}
+        }
+      },
+      "CaseCollection": {
+        "type": "object",
+        "properties": {
+          "data": {"type": "array", "items": {"type": "object"}},
+          "links": {"type": "object"},
+          "meta": {"type": "object"}
+        }
+      }
+    },
+    "responses": {
+      "Unauthorized": {
+        "description": "Unauthorized - Invalid or missing JWT token",
+        "content": {
+          "application/vnd.api+json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "errors": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "status": {"type": "string", "example": "401"},
+                      "title": {"type": "string", "example": "Unauthorized"},
+                      "detail": {"type": "string", "example": "Token not provided"}
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "Forbidden": {
+        "description": "Forbidden - Insufficient permissions",
+        "content": {
+          "application/vnd.api+json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "errors": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "status": {"type": "string", "example": "403"},
+                      "title": {"type": "string", "example": "Forbidden"},
+                      "detail": {"type": "string"}
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "NotFound": {
+        "description": "Resource not found",
+        "content": {
+          "application/vnd.api+json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "errors": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "status": {"type": "string", "example": "404"},
+                      "title": {"type": "string", "example": "Not Found"},
+                      "detail": {"type": "string"}
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "ValidationError": {
+        "description": "Validation error - Invalid request data",
+        "content": {
+          "application/vnd.api+json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": {"type": "string"},
+                "errors": {
+                  "type": "object",
+                  "additionalProperties": {
+                    "type": "array",
+                    "items": {"type": "string"}
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
